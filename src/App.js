@@ -2,11 +2,15 @@ import logo from './logo.svg';
 import './App.css';
 import './index.css';
 
-import Mockup from './mockup';
+import FinancialPlanning from './FinancialPlanning';
+import AppContextProvider from './context/appContext';
 
 function App() {
 	return (
-		<Mockup />
+		<AppContextProvider>
+			<FinancialPlanning />
+		</AppContextProvider>
+		// <Mockup />
 		// <div className="App">
 		//   <header className="App-header">
 		//     <img src={logo} className="App-logo" alt="logo" />

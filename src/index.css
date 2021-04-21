@@ -38,6 +38,10 @@ code {
 	border-top-right-radius: 0.25rem;
 }
 
+.nav-tab.active {
+	font-weight: bold;
+}
+
 .variation-section {
 }
 
@@ -46,6 +50,10 @@ code {
 	border-radius: 0.5rem;
 	color: var(--color-primary);
 	font-weight: bold;
+}
+
+.variation-section-button.active {
+	color: blue;
 }
 
 .top-row {
