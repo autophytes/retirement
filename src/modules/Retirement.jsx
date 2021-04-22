@@ -1,8 +1,14 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { AppContext } from '../context/appContext';
+
+import numeral from 'numeral';
 
 const Retirement = () => {
 	const { profile, setProfile } = useContext(AppContext);
+
+	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState(0);
+	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState(0);
+	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState(0);
 
 	const results = useMemo(() => {
 		const {
@@ -47,6 +53,24 @@ const Retirement = () => {
 
 		return newResults;
 	}, [profile]);
+
+	useEffect(() => {
+		const { retirementAge, inflationExpenses, currentAge } = profile;
+
+		const retirementYrResult = results.find((result) => result.age === 65);
+
+		const newSavingsAtRetirementFV = roundTo(retirementYrResult.value, -3);
+		const newSavingsAtRetirementPV = roundTo(
+			newSavingsAtRetirementFV / (1 + inflationExpenses) ** (retirementAge - currentAge),
+			-3
+		);
+
+		const newIncomeAtRetirementFV = roundTo(retirementYrResult.incomeNeeded, -3);
+
+		setSavingsAtRetirementPV(numeral(newSavingsAtRetirementPV).format('($0,0)'));
+		setSavingsAtRetirementFV(numeral(newSavingsAtRetirementFV).format('($0,0)'));
+		setIncomeAtRetirementFV(numeral(newIncomeAtRetirementFV).format('($0,0)'));
+	}, [results, profile]);
 
 	console.table(results);
 
@@ -142,12 +166,12 @@ const Retirement = () => {
 				<div className='top-row'>
 					<div className='top-row-section'>
 						<p>At Retirement (Today Dollars)</p>
-						<p>$1,000,00</p>
+						<p>{savingsAtRetirementPV}</p>
 					</div>
 
 					<div className='top-row-section'>
 						<p>At Retirement (Future Dollars)</p>
-						<p>$1,000,00</p>
+						<p>{savingsAtRetirementFV}</p>
 					</div>
 
 					<div className='top-row-section'>
@@ -157,7 +181,7 @@ const Retirement = () => {
 
 					<div className='top-row-section'>
 						<p>Retirement Income (Future Dollars)</p>
-						<p>$100,000</p>
+						<p>{incomeAtRetirementFV}</p>
 					</div>
 				</div>
 
@@ -175,8 +199,8 @@ const Retirement = () => {
 					<p>Social Security (65): $20,000</p>
 
 					<p>Average negative years: 18</p>
-					<p>Inflation (Income): 2.5%</p>
-					<p>Inflation (Expenses): 2.5%</p>
+					<p>Inflation (Income): {(profile.inflationIncome * 100).toFixed(1)}%</p>
+					<p>Inflation (Expenses): {(profile.inflationExpenses * 100).toFixed(1)}%</p>
 					<p>Inflation (Pension): 2.5%</p>
 				</div>
 			</div>
@@ -185,6 +209,10 @@ const Retirement = () => {
 };
 
 export default Retirement;
+
+const roundTo = (numberToRound, precision) => {
+	return Number(Math.round(numberToRound + `e${precision}`) + `e${-precision}`);
+};
 
 // FEATURE NUMBERS
 // Savings at retirement

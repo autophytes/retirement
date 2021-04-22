@@ -5,13 +5,13 @@ export const AppContext = createContext();
 const AppContextProvider = (props) => {
 	// STATE
 	const [profile, setProfile] = useState({
-		currentAge: 0,
-		retirementAge: 0,
-		annualSavings: 0,
-		startingInvestments: 0,
-		retirementIncome: 0,
-		preRetirementReturn: 0,
-		postRetirementReturn: 0,
+		currentAge: 29,
+		retirementAge: 65,
+		annualSavings: 10000,
+		startingInvestments: 50000,
+		retirementIncome: 60000,
+		preRetirementReturn: 0.08,
+		postRetirementReturn: 0.06,
 		inflationIncome: 0.02,
 		inflationExpenses: 0.03,
 	});
