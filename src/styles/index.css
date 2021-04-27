@@ -1,0 +1,133 @@
+html {
+	font-size: 14px;
+	box-sizing: border-box;
+
+	--color-primary: #0095ff;
+	--color-primary-rgb: 0, 149, 255;
+}
+
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMac SystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+		'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.client-name {
+	font-size: 2rem;
+}
+
+.navbar {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+.variation-section {
+	margin-right: 2rem;
+}
+
+.variation-section h3 {
+	margin: 1.5rem 0 0.75rem 0;
+}
+
+.variation-section-buttons {
+	margin-left: 0.5rem;
+}
+
+.variation-section-button {
+	border: 2px solid var(--color-primary);
+	/* border: none; */
+	padding: 0.1rem 0.5rem;
+	margin-right: 0.25rem;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+	color: var(--color-primary);
+	background-color: white;
+	/* background-color: var(--color-primary); */
+	font-weight: bold;
+}
+
+.variation-section-button.active,
+.variation-section-button:hover {
+	/* color: var(--color-primary); */
+	color: white;
+	background-color: var(--color-primary);
+}
+
+.top-row {
+	margin: 1rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: flex-start;
+}
+
+.top-row-section {
+	text-align: center;
+}
+
+.nav-tab {
+	width: 12rem;
+	height: 100%;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+
+	padding: 0.25rem 0;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #b9c1c3;
+	background: none;
+	text-decoration: none;
+	cursor: pointer;
+
+	/* border-radius: 3px; */
+	border-top: 3px solid white;
+	border-right: 1px solid #eee;
+	border-left: 1px solid #eee;
+	border-bottom: 2px solid #eee;
+}
+
+.nav-tab:focus:not(:focus-visible) {
+	outline: none;
+}
+.nav-tab:last-child:not(.active) {
+	border-right: 2px solid white;
+}
+.nav-tab:first-child:not(.active) {
+	border-left: 2px solid white;
+}
+.nav-tab:last-child.active {
+	border-right: 2px solid #eee;
+}
+.nav-tab:first-child.active {
+	border-left: 2px solid #eee;
+}
+
+.nav-tab:hover,
+.nav-tab:active,
+.nav-tab.active {
+	text-shadow: 1px 1px 2px rgba(30, 30, 30, 0.04), 1px 1px 8px rgba(30, 30, 30, 0.03),
+		1px 1px 14px rgba(30, 30, 30, 0.02);
+	color: var(--color-primary);
+}
+
+.nav-tab.active {
+	border-bottom: 2px solid white;
+	border-top: 3px solid var(--color-primary);
+}
