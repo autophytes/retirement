@@ -9323,6 +9323,11 @@ requires-port@^1.0.0:
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
 
+reseter.css@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/reseter.css/-/reseter.css-1.1.2.tgz#18e457657334f85152286c37cc0259b30fd0ea60"
+  integrity sha512-eiEgL1aFCGJ2MUtf7JV7aBN5ew4m0ddE3BnYB9eOIauEA5aEqGUqAVvUycqUsxqXLqa6e8pSMNDcWlWaH2JNLw==
+
 resolve-cwd@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/resolve-cwd/-/resolve-cwd-2.0.0.tgz#00a9f7387556e27038eae232caa372a6a59b665a"
