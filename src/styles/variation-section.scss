@@ -1,0 +1,33 @@
+.variation-section {
+  margin-right: 2rem;
+  margin-bottom: 1.5rem;
+
+  & h3 {
+    margin: 0 0 0.75rem 0;
+  }
+  &-buttons {
+    margin-left: 0.5rem;
+  }
+
+  &-button {
+    border: 2px solid var(--color-primary);
+    /* border: none; */
+    padding: 0.1rem 0.5rem;
+    margin-right: 0.25rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    color: var(--color-primary);
+    background-color: white;
+    /* background-color: var(--color-primary); */
+    font-weight: bold;
+
+    &.active,
+    &:hover {
+      /* color: var(--color-primary); */
+      color: white;
+      background-color: var(--color-primary);
+    }
+  }
+}
