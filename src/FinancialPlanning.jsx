@@ -8,7 +8,7 @@ const App = () => {
 
 	return (
 		<div style={{ margin: '3rem 5rem' }}>
-			<h2 className='client-name'>{clientName}</h2>
+			<h2 className='client-name-title'>{clientName}</h2>
 
 			{/* Module Selection Tabs */}
 			<nav className='navbar'>

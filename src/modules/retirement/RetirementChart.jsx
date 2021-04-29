@@ -1,7 +1,6 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartJS from 'chart.js/auto';
-import { Line } from 'react-chartjs-2';
 
 // Some helpful utils for chart-js
 // https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js
@@ -75,6 +74,8 @@ const RetirementChart = ({ results }) => {
 				],
 			},
 		};
+
+		// eslint-disable-next-line no-console
 	}, []);
 
 	// Initialize the chart

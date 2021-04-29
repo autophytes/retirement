@@ -5,17 +5,16 @@ import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
 
 const Retirement = () => {
-	const { profile, setProfile } = useContext(AppContext);
+	const { profile, setProfile, updateProfile } = useContext(AppContext);
 
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 
+	// Compute the updated projection results
 	const results = useMemo(() => {
 		const {
-			currentAge,
-			retirementAge,
-			annualSavings,
+			primary,
 			startingInvestments,
 			retirementIncome,
 			inflationIncome,
@@ -27,24 +26,25 @@ const Retirement = () => {
 
 		let newResults = [
 			{
-				age: currentAge,
+				age: primary.currentAge,
 				value: startingInvestments,
 				incomeNeeded: retirementIncome,
-				annualSavings: annualSavings,
+				primaryAnnualSavings: primary.annualSavings,
 			},
 		];
 
-		for (let age = currentAge + 1; age <= endingAge; age++) {
+		for (let age = primary.currentAge + 1; age <= endingAge; age++) {
 			const prior = newResults[newResults.length - 1];
 
 			let currentYear = {
 				age: age,
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
-				annualSavings: prior.annualSavings * (1 + inflationIncome),
+				primaryAnnualSavings: prior.primaryAnnualSavings * (1 + inflationIncome),
 			};
 
-			if (age <= retirementAge) {
-				currentYear.value = prior.value * (1 + preRetirementReturn) + prior.annualSavings;
+			if (age <= primary.retirementAge) {
+				currentYear.value =
+					prior.value * (1 + preRetirementReturn) + prior.primaryAnnualSavings;
 			} else {
 				currentYear.value = prior.value * (1 + postRetirementReturn) - prior.incomeNeeded;
 			}
@@ -56,14 +56,20 @@ const Retirement = () => {
 		return newResults;
 	}, [profile]);
 
+	// Extract values to display
 	useEffect(() => {
-		const { retirementAge, inflationExpenses, currentAge } = profile;
+		const { primary, inflationExpenses } = profile;
 
-		const retirementYrResult = results.find((result) => result.age === 65);
+		let retirementYrResult = results.find((result) => result.age === primary.retirementAge);
+		// The person has already retired, use the currentage
+		if (!retirementYrResult) {
+			retirementYrResult = results.find((result) => result.age === primary.currentAge);
+		}
 
 		const newSavingsAtRetirementFV = roundTo(retirementYrResult.value, -3);
 		const newSavingsAtRetirementPV = roundTo(
-			newSavingsAtRetirementFV / (1 + inflationExpenses) ** (retirementAge - currentAge),
+			newSavingsAtRetirementFV /
+				(1 + inflationExpenses) ** (primary.retirementAge - primary.currentAge),
 			-3
 		);
 
@@ -86,7 +92,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.preRetirementReturn === 0.06 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, preRetirementReturn: 0.06 }))}>
+							onClick={() => updateProfile(0.06, 'preRetirementReturn')}>
 							{(0.06 * 100).toFixed(1)}%
 						</button>
 
@@ -95,7 +101,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.preRetirementReturn === 0.07 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, preRetirementReturn: 0.07 }))}>
+							onClick={() => updateProfile(0.07, 'preRetirementReturn')}>
 							{(0.07 * 100).toFixed(1)}%
 						</button>
 
@@ -104,7 +110,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.preRetirementReturn === 0.08 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, preRetirementReturn: 0.08 }))}>
+							onClick={() => updateProfile(0.08, 'preRetirementReturn')}>
 							{(0.08 * 100).toFixed(1)}%
 						</button>
 					</div>
@@ -118,7 +124,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.postRetirementReturn === 0.06 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, postRetirementReturn: 0.06 }))}>
+							onClick={() => updateProfile(0.06, 'postRetirementReturn')}>
 							{(0.06 * 100).toFixed(1)}%
 						</button>
 
@@ -127,7 +133,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.postRetirementReturn === 0.07 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, postRetirementReturn: 0.07 }))}>
+							onClick={() => updateProfile(0.07, 'postRetirementReturn')}>
 							{(0.07 * 100).toFixed(1)}%
 						</button>
 
@@ -136,7 +142,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.postRetirementReturn === 0.08 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, postRetirementReturn: 0.08 }))}>
+							onClick={() => updateProfile(0.08, 'postRetirementReturn')}>
 							{(0.08 * 100).toFixed(1)}%
 						</button>
 					</div>
@@ -150,7 +156,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.retirementIncome === 70000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementIncome: 70000 }))}>
+							onClick={() => updateProfile(70000, 'retirementIncome')}>
 							70,000
 						</button>
 						<button
@@ -158,7 +164,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.retirementIncome === 80000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementIncome: 80000 }))}>
+							onClick={() => updateProfile(80000, 'retirementIncome')}>
 							80,000
 						</button>
 						<button
@@ -166,7 +172,7 @@ const Retirement = () => {
 								'variation-section-button' +
 								(profile.retirementIncome === 90000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementIncome: 90000 }))}>
+							onClick={() => updateProfile(90000, 'retirementIncome')}>
 							90,000
 						</button>
 					</div>
@@ -177,23 +183,26 @@ const Retirement = () => {
 					<div className='variation-section-buttons'>
 						<button
 							className={
-								'variation-section-button' + (profile.retirementAge === 55 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.retirementAge === 55 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementAge: 55 }))}>
+							onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
 							55
 						</button>
 						<button
 							className={
-								'variation-section-button' + (profile.retirementAge === 60 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.retirementAge === 60 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementAge: 60 }))}>
+							onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
 							60
 						</button>
 						<button
 							className={
-								'variation-section-button' + (profile.retirementAge === 65 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.retirementAge === 65 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, retirementAge: 65 }))}>
+							onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
 							65
 						</button>
 					</div>
@@ -204,23 +213,26 @@ const Retirement = () => {
 					<div className='variation-section-buttons'>
 						<button
 							className={
-								'variation-section-button' + (profile.annualSavings === 5000 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.annualSavings === 5000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, annualSavings: 5000 }))}>
+							onClick={() => updateProfile(5000, 'annualSavings', 'primary')}>
 							$5,000
 						</button>
 						<button
 							className={
-								'variation-section-button' + (profile.annualSavings === 10000 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.annualSavings === 10000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, annualSavings: 10000 }))}>
+							onClick={() => updateProfile(10000, 'annualSavings', 'primary')}>
 							$10,000
 						</button>
 						<button
 							className={
-								'variation-section-button' + (profile.annualSavings === 15000 ? ' active' : '')
+								'variation-section-button' +
+								(profile.primary.annualSavings === 15000 ? ' active' : '')
 							}
-							onClick={(e) => setProfile((prev) => ({ ...prev, annualSavings: 15000 }))}>
+							onClick={() => updateProfile(15000, 'annualSavings', 'primary')}>
 							$15,000
 						</button>
 					</div>
@@ -232,23 +244,26 @@ const Retirement = () => {
 				{/* Top row of results */}
 				<div className='top-row'>
 					<div className='top-row-section'>
-						<p>At Retirement (Today Dollars)</p>
-						<p>{savingsAtRetirementPV}</p>
+						<p className='top-row-title'>At Retirement</p>
+						<p className='top-row-subtitle'>(Today Dollars)</p>
+						<p className='top-row-value'>{savingsAtRetirementPV}</p>
 					</div>
 
 					<div className='top-row-section'>
-						<p>At Retirement (Future Dollars)</p>
-						<p>{savingsAtRetirementFV}</p>
+						<p className='top-row-title'>At Retirement</p>
+						<p className='top-row-subtitle'>(Future Dollars)</p>
+						<p className='top-row-value'>{savingsAtRetirementFV}</p>
 					</div>
 
 					<div className='top-row-section'>
-						<p>Lasts Until 95</p>
-						<p>87%</p>
+						<p className='top-row-title'>Retirement Income</p>
+						<p className='top-row-subtitle'>(Future Dollars)</p>
+						<p className='top-row-value'>{incomeAtRetirementFV}</p>
 					</div>
 
 					<div className='top-row-section'>
-						<p>Retirement Income (Future Dollars)</p>
-						<p>{incomeAtRetirementFV}</p>
+						<p className='top-row-title'>Lasts Until 95</p>
+						<p className='top-row-value'>87%</p>
 					</div>
 				</div>
 
