@@ -11,10 +11,30 @@ const Retirement = () => {
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 
+	// primary: {
+	//   currentAge: 29,
+	//   retirementAge: 65,
+	//   annualSavings: 12000,
+	//   currentIncome: 75000,
+	// },
+	// spouse: {
+	//   currentAge: 32,
+	//   retirementAge: 62,
+	//   annualSavings: 10000,
+	//   currentIncome: 50000,
+	// },
+	// startingInvestments: 50000,
+	// retirementIncome: 70000,
+	// preRetirementReturn: 0.08,
+	// postRetirementReturn: 0.06,
+	// inflationIncome: 0.02,
+	// inflationExpenses: 0.03,
+
 	// Compute the updated projection results
 	const results = useMemo(() => {
 		const {
 			primary,
+			spouse,
 			startingInvestments,
 			retirementIncome,
 			inflationIncome,
@@ -26,28 +46,83 @@ const Retirement = () => {
 
 		let newResults = [
 			{
-				age: primary.currentAge,
+				primary: {
+					age: primary.currentAge,
+					annualSavings: primary.annualSavings,
+					currentIncome: primary.currentIncome,
+				},
+				spouse: {
+					age: spouse.currentAge,
+					annualSavings: spouse.annualSavings,
+					currentIncome: spouse.currentIncome,
+				},
 				value: startingInvestments,
 				incomeNeeded: retirementIncome,
-				primaryAnnualSavings: primary.annualSavings,
 			},
 		];
 
-		for (let age = primary.currentAge + 1; age <= endingAge; age++) {
+		const yearsToRun = endingAge - Math.min(primary.currentAge, spouse.currentAge);
+
+		for (let year = 1; year <= yearsToRun; year++) {
 			const prior = newResults[newResults.length - 1];
 
 			let currentYear = {
-				age: age,
+				primary: {
+					age: primary.currentAge + year,
+					annualSavings: prior.primary.annualSavings * (1 + inflationIncome),
+					currentIncome: prior.primary.currentIncome * (1 + inflationIncome),
+				},
+				spouse: {
+					age: spouse.currentAge + year,
+					annualSavings: prior.spouse.annualSavings * (1 + inflationIncome),
+					currentIncome: prior.spouse.currentIncome * (1 + inflationIncome),
+				},
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
-				primaryAnnualSavings: prior.primaryAnnualSavings * (1 + inflationIncome),
 			};
 
-			if (age <= primary.retirementAge) {
+			const hasPrimaryRetired = primary.retirementAge <= currentYear.primary.age;
+			const hasSpouseRetired = spouse.retirementAge <= currentYear.spouse.age;
+			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
+
+			if (
+				// If neither have retired
+				peopleRetired === 0
+			) {
 				currentYear.value =
-					prior.value * (1 + preRetirementReturn) + prior.primaryAnnualSavings;
+					prior.value * (1 + preRetirementReturn) + // Grow the savings
+					prior.primary.annualSavings + // Add the primary's contributions
+					prior.spouse.annualSavings; // Add the spouse's contributions
+			} else if (
+				// If one has retired
+				peopleRetired === 1
+			) {
+				// Pull the person object for the active worker
+				const nonRetiredPerson = hasPrimaryRetired ? prior.spouse : prior.primary;
+
+				// Calculate whether the worker is making more or less than the income they need
+				const spouseIncomeDifference = nonRetiredPerson.currentIncome - prior.incomeNeeded;
+
+				// If they make more, calculate the contribution
+				const contribution = Math.min(
+					Math.max(spouseIncomeDifference, 0),
+					nonRetiredPerson.annualSavings
+				);
+
+				// If they make less, calculate the withdrawal
+				const withdrawal = Math.min(spouseIncomeDifference, 0);
+
+				currentYear.value =
+					(prior.value + withdrawal) * (1 + preRetirementReturn) + contribution;
 			} else {
 				currentYear.value = prior.value * (1 + postRetirementReturn) - prior.incomeNeeded;
 			}
+
+			// if (age <= primary.retirementAge) {
+			// 	currentYear.value =
+			// 		prior.value * (1 + preRetirementReturn) + prior.primaryAnnualSavings;
+			// } else {
+			// 	currentYear.value = prior.value * (1 + postRetirementReturn) - prior.incomeNeeded;
+			// }
 
 			newResults.push(currentYear);
 		}
@@ -60,10 +135,13 @@ const Retirement = () => {
 	useEffect(() => {
 		const { primary, inflationExpenses } = profile;
 
-		let retirementYrResult = results.find((result) => result.age === primary.retirementAge);
+		console.log('results:', results);
+		let retirementYrResult = results.find(
+			(result) => result.primary.age === primary.retirementAge
+		);
 		// The person has already retired, use the currentage
 		if (!retirementYrResult) {
-			retirementYrResult = results.find((result) => result.age === primary.currentAge);
+			retirementYrResult = results.find((result) => result.primary.age === primary.currentAge);
 		}
 
 		const newSavingsAtRetirementFV = roundTo(retirementYrResult.value, -3);

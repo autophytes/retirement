@@ -22,31 +22,37 @@ const Setup = () => {
 						{/* Frequent Settings */}
 
 						<p></p>
-						<p>Primary</p>
-						<p>Spouse</p>
+						<label id='primaryColumn'>Primary</label>
+						<label id='spouseColumn'>Spouse</label>
 
-						<label htmlFor='currentAge'>Current Age</label>
+						<label htmlFor='currentAge' id='currentAgeLabel'>
+							Current Age
+						</label>
 						<input
 							className='number-input'
 							type='number'
 							id='currentAge'
+							aria-labelledby='primaryColumn currentAgeLabel'
 							value={profile.primary.currentAge ?? ''}
 							onChange={(value) => updateProfile(value, 'currentAge', 'primary')}
 						/>
 						<input
 							className='number-input'
 							type='number'
-							id='currentAge'
+							aria-labelledby='spouseColumn currentAgeLabel'
 							value={profile.spouse.currentAge ?? ''}
 							onChange={(e) => updateProfile(Number(e.target.value), 'currentAge', 'spouse')}
 						/>
 
 						{/* Validation to do - ensure not less than current age */}
-						<label htmlFor='retirementAge'>Retirement Age</label>
+						<label htmlFor='retirementAge' id='retirementAgeLabel'>
+							Retirement Age
+						</label>
 						<input
 							className='number-input'
 							type='number'
 							id='retirementAge'
+							aria-labelledby='primaryColumn retirementAgeLabel'
 							value={profile.primary.retirementAge ?? ''}
 							onChange={(e) =>
 								updateProfile(Number(e.target.value), 'retirementAge', 'primary')
@@ -55,18 +61,44 @@ const Setup = () => {
 						<input
 							className='number-input'
 							type='number'
-							id='retirementAge'
+							aria-labelledby='spouseColumn retirementAgeLabel'
 							value={profile.spouse.retirementAge ?? ''}
 							onChange={(e) =>
 								updateProfile(Number(e.target.value), 'retirementAge', 'spouse')
 							}
 						/>
 
-						<label htmlFor='annualSavings'>Annual Savings</label>
+						<label htmlFor='currentIncome' id='currentIncomeLabel'>
+							Current Income
+						</label>
+						<input
+							className='number-input'
+							type='number'
+							id='currentIncome'
+							aria-labelledby='primaryColumn currentIncomeLabel'
+							value={profile.primary.currentIncome ?? ''}
+							onChange={(e) =>
+								updateProfile(Number(e.target.value), 'currentIncome', 'primary')
+							}
+						/>
+						<input
+							className='number-input'
+							type='number'
+							aria-labelledby='spouseColumn currentIncomeLabel'
+							value={profile.spouse.currentIncome ?? ''}
+							onChange={(e) =>
+								updateProfile(Number(e.target.value), 'currentIncome', 'spouse')
+							}
+						/>
+
+						<label htmlFor='annualSavings' id='annualSavingsLabel'>
+							Annual Savings
+						</label>
 						<input
 							className='number-input'
 							type='number'
 							id='annualSavings'
+							aria-labelledby='primaryColumn annualSavingsLabel'
 							value={profile.primary.annualSavings ?? ''}
 							onChange={(e) =>
 								updateProfile(Number(e.target.value), 'annualSavings', 'primary')
@@ -75,18 +107,21 @@ const Setup = () => {
 						<input
 							className='number-input'
 							type='number'
-							id='annualSavings'
+							aria-labelledby='spouseColumn annualSavingsLabel'
 							value={profile.spouse.annualSavings ?? ''}
 							onChange={(e) =>
 								updateProfile(Number(e.target.value), 'annualSavings', 'spouse')
 							}
 						/>
 
-						<label htmlFor='startingInvestments'>Current Investments</label>
+						<label htmlFor='startingInvestments' id='startingInvestmentsLabel'>
+							Current Investments
+						</label>
 						<input
 							className='number-input'
 							type='number'
 							id='startingInvestments'
+							aria-labelledby='startingInvestmentsLabel'
 							value={profile.startingInvestments ?? ''}
 							onChange={(e) =>
 								setProfile((prev) => ({
@@ -97,11 +132,14 @@ const Setup = () => {
 						/>
 						<p></p>
 
-						<label htmlFor='retirementIncome'>Retirement Income</label>
+						<label htmlFor='retirementIncome' id='retirementIncomeLabel'>
+							Retirement Income
+						</label>
 						<input
 							className='number-input'
 							type='number'
 							id='retirementIncome'
+							aria-labelledby='retirementIncomeLabel'
 							value={profile.retirementIncome ?? ''}
 							onChange={(e) => {
 								setProfile((prev) => ({ ...prev, retirementIncome: Number(e.target.value) }));
