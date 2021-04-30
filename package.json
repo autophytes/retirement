@@ -13,6 +13,8 @@
 		"react-css-collapse": "^4.1.0",
 		"react-dom": "^17.0.2",
 		"react-scripts": "4.0.3",
+		"reseter.css": "^1.1.2",
+		"sass": "^1.32.12",
 		"web-vitals": "^1.0.1"
 	},
 	"scripts": {
