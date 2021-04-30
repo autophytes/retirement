@@ -8,12 +8,14 @@ const AppContextProvider = (props) => {
 		primary: {
 			currentAge: 29,
 			retirementAge: 65,
-			annualSavings: 10000,
+			annualSavings: 12000,
+			currentIncome: 75000,
 		},
 		spouse: {
-			currentAge: 29,
-			retirementAge: 65,
+			currentAge: 32,
+			retirementAge: 62,
 			annualSavings: 10000,
+			currentIncome: 50000,
 		},
 		startingInvestments: 50000,
 		retirementIncome: 70000,

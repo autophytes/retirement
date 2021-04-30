@@ -44,7 +44,7 @@ const RetirementChart = ({ results }) => {
 		if (chart) {
 			console.log('rerunning chart update');
 
-			const labels = results.map((item) => item.age);
+			const labels = results.map((item) => item.primary.age);
 			const data = results.map((item) => item.value);
 
 			chart.data.labels = labels;
@@ -55,7 +55,7 @@ const RetirementChart = ({ results }) => {
 
 	// Initial config build
 	const config = useMemo(() => {
-		const newLabels = results.map((item) => item.age);
+		const newLabels = results.map((item) => item.primary.age);
 		const newData = results.map((item) => item.value);
 
 		return {
