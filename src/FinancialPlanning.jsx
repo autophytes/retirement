@@ -4,7 +4,7 @@ import Setup from './modules/Setup';
 
 const App = () => {
 	const [clientName, setClientName] = useState('Otto & Manua Phytes');
-	const [currentTab, setCurrentTab] = useState('Retirement');
+	const [currentTab, setCurrentTab] = useState('Setup');
 
 	return (
 		<div style={{ margin: '3rem 5rem' }}>

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const NumberInput = ({ value, onChange, className = '', id = '' }) => {
+const NumberInput = ({ value, onChange, className = '', id = '', ...additionalProps }) => {
 	const inputRef = useRef(null);
 	const formattedValueRef = useRef('');
+
+	const digitsBeforeSelectionRef = useRef(null);
 
 	const [formattedValue, setFormattedValue] = useState('');
 	useEffect(() => {
@@ -42,7 +44,7 @@ const NumberInput = ({ value, onChange, className = '', id = '' }) => {
 		let newNumsBefore = 0;
 		for (let i = 0; i < newValue.length; i++) {
 			// Count numeric characters
-			if (!isNaN(value.charAt(i))) {
+			if (!isNaN(newValue.charAt(i))) {
 				newNumsBefore++;
 			}
 
@@ -54,13 +56,17 @@ const NumberInput = ({ value, onChange, className = '', id = '' }) => {
 		}
 		console.log('newNumsBefore:', newNumsBefore);
 
-		setTimeout(() => {
+		const newTimeout = setTimeout(() => {
 			console.log('setting format value updated selection');
 			inputRef.current.selectionStart = selection;
 			inputRef.current.selectionEnd = selection;
 		});
 
-		return newValue;
+		setFormattedValue(newValue);
+		// return newValue;
+
+		// If rerunning before the timeout executes, clear the old timeout
+		return () => clearTimeout(newTimeout);
 	}, [value]);
 
 	const handleOnChange = (e, value) => {
@@ -69,14 +75,14 @@ const NumberInput = ({ value, onChange, className = '', id = '' }) => {
 		// const origValue =
 
 		// Removes everything except non-numeric or decimal
-		const newValue = originalValue.replace(/[^0-9.]/g, '');
+		const newValue = Number(originalValue.replace(/[^0-9.]/g, ''));
 
 		onChange(newValue);
 	};
 
 	const formatValue = (value) => {};
 
-	const handleKeyDown = (e) => {
+	const handleKeyDownOld = (e) => {
 		// Default handling if selection is not collapsed
 		if (!(e.target.selectionStart === e.target.selectionEnd)) return;
 
@@ -137,6 +143,80 @@ const NumberInput = ({ value, onChange, className = '', id = '' }) => {
 		}
 	};
 
+	const handleKeyDown = (e) => {
+		console.log('e:', e);
+		console.log('e.key.test: ', /\d/.test(e.key));
+
+		let numberValue = value.toString();
+		const textValue = e.target.value;
+
+		// Period, delete, backspace, numbers
+		// Selection
+
+		// Formatted value selection
+		const formattedSelectionStart = e.target.selectionStart;
+		const formattedSelectionEnd = e.target.selectionEnd;
+		const isCollapsed = e.target.selectionStart;
+
+		const digitsBeforeSelection = countDigitsInString(
+			textValue.slice(0, formattedSelectionStart)
+		);
+		const digitsInSelection = countDigitsInString(
+			textValue.slice(formattedSelectionStart, formattedSelectionEnd)
+		);
+
+		// Raw value selection
+		const selectionStart = digitsBeforeSelection;
+		const selectionEnd = digitsBeforeSelection + digitsInSelection;
+
+		if (e.key === 'Backspace') {
+			// BACKSPACE
+			if (isCollapsed) {
+				// Remove the character before the selection
+				numberValue =
+					numberValue.slice(0, Math.min(selectionStart - 1, 0)) +
+					numberValue.slice(selectionEnd, numberValue.length);
+			} else {
+				// Remove the selected content
+				numberValue =
+					numberValue.slice(0, selectionStart) +
+					numberValue.slice(selectionEnd, numberValue.length);
+			}
+		} else if (e.key === 'Delete') {
+			// DELETE
+			if (isCollapsed) {
+				// Remove the character after the selection
+				numberValue =
+					numberValue.slice(0, selectionStart) +
+					numberValue.slice(
+						Math.max(selectionEnd + 1, numberValue.length),
+						numberValue.length
+					);
+			} else {
+				// Remove the selected content
+				numberValue =
+					numberValue.slice(0, selectionStart) +
+					numberValue.slice(selectionEnd, numberValue.length);
+			}
+		} else if (e.key === '.') {
+			// PERIOD
+			// If we don't already have a period, insert a period
+			if (numberValue.indexOf('.') === -1) {
+				numberValue =
+					numberValue.slice(0, selectionStart) +
+					e.key +
+					numberValue.slice(selectionEnd, numberValue.length);
+			}
+		} else if (/\d/.test(e.key.charAt(0))) {
+			// DIGIT
+			// Insert the digit at that point
+			numberValue =
+				numberValue.slice(0, selectionStart) +
+				e.key +
+				numberValue.slice(selectionEnd, numberValue.length);
+		}
+	};
+
 	return (
 		<input
 			type='text'
@@ -144,11 +224,24 @@ const NumberInput = ({ value, onChange, className = '', id = '' }) => {
 			ref={inputRef}
 			// onKeyDown={(e) => console.log(e)}
 			className={'number-input ' + className}
-			value={formatValue(value)}
+			value={formattedValue}
 			onKeyDown={handleKeyDown}
 			onChange={handleOnChange}
+			{...additionalProps}
 		/>
 	);
 };
 
 export default NumberInput;
+
+const countDigitsInString = (string) => {
+	let digitCount = 0;
+	for (let i = 0; i < string.length; i++) {
+		// Count numeric characters
+		if (!isNaN(string.charAt(i)) || string.charAt(i) === '.') {
+			digitCount++;
+		}
+	}
+
+	return digitCount;
+};

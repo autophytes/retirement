@@ -96,15 +96,21 @@ input:focus {
 	display: grid;
 	grid-template-columns: max-content auto auto;
 	width: min-content;
+	height: fit-content;
 	gap: 0.5rem;
-	grid-gap: 0.5rem;
+	grid-gap: 1rem;
 	align-items: center;
-	margin-left: 1rem;
-	margin-bottom: 2rem;
+	margin: 1rem 0 4rem 2rem;
+}
+
+.setup-retirement-grid label {
+	font-size: 1.15rem;
+	font-weight: bold;
+	margin-right: 0.5rem;
 }
 
 .setup-retirement-additional-section {
-	margin-left: 1rem;
+	margin-left: 2rem;
 }
 
 .setup-retirement-additional-title {
@@ -113,6 +119,8 @@ input:focus {
 	user-select: none;
 	display: inline-block;
 	margin-bottom: 1.5rem;
+	border-left: 3px solid var(--color-primary);
+	padding-left: 0.5rem;
 }
 
 .variation-section {
