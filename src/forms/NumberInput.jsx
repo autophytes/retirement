@@ -11,147 +11,57 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 		formattedValueRef.current = formattedValue;
 	}, [formattedValue]);
 
+	// Format and render the new value
 	useEffect(() => {
 		if (!inputRef.current) {
 			setFormattedValue(value);
 			return;
 		}
 
-		const prevFormattedValue = formattedValueRef.current;
-
-		console.log('value:', value);
-
-		// Reformatting when focused only happens after an action that collapses the selection
-		const selection = inputRef.current.selectionStart;
-		console.log('format value initial selection:', selection);
-
-		// Save how many integers come before the selection before formatting
-		let numsBefore = 0;
-		for (let i = 0; i < selection; i++) {
-			// Count numeric characters
-			if (!isNaN(prevFormattedValue.charAt(i))) {
-				console.log('is number: ', prevFormattedValue.charAt(i));
-				numsBefore++;
-			}
-		}
-		console.log('numsBefore:', numsBefore);
-
 		// Format to thousands
-		let newValue = value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+		let [part1, part2] = value.toString().split('.', 2);
+		part1 = part1.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-		// Calculate updated selection (accounting for inserted non-numeric characters)
-		let newSelection = selection;
-		let newNumsBefore = 0;
-		for (let i = 0; i < newValue.length; i++) {
-			// Count numeric characters
-			if (!isNaN(newValue.charAt(i))) {
-				newNumsBefore++;
-			}
+		const newValue = part1 + (part2 ? '.' + part2 : '');
+		console.log('newValue:', newValue);
 
-			// Update the cursor position once in the same spot
-			if (newNumsBefore === numsBefore) {
-				newSelection = i + 1;
-				break;
-			}
+		// Always format to the penny for currencies
+		// If the period is the last digit, don't truncate
+		// non-collapsed backspace/delete is deleting extra character
+		// Prefix with a $ for currencies
+		// Add percentage support as well
+		// NOTE TO SELF - useLayoutEffect queued update for selection
+
+		let newTimeout;
+		if (digitsBeforeSelectionRef.current !== null) {
+			let newCursor = findCursorPositionForDigits(newValue, digitsBeforeSelectionRef.current);
+
+			newTimeout = setTimeout(() => {
+				console.log('setting format value updated selection');
+				inputRef.current.selectionStart = newCursor;
+				inputRef.current.selectionEnd = newCursor;
+			});
 		}
-		console.log('newNumsBefore:', newNumsBefore);
-
-		const newTimeout = setTimeout(() => {
-			console.log('setting format value updated selection');
-			inputRef.current.selectionStart = selection;
-			inputRef.current.selectionEnd = selection;
-		});
 
 		setFormattedValue(newValue);
-		// return newValue;
 
 		// If rerunning before the timeout executes, clear the old timeout
 		return () => clearTimeout(newTimeout);
 	}, [value]);
 
-	const handleOnChange = (e, value) => {
-		let originalValue = e ? e.target.value : value;
-		// const newValue = e.target.value;
-		// const origValue =
+	// TODO
+	// Have a variable that we store the new cursor position in (digitsBefore variable)
+	// At the end, if that variable is non-null, fire the change handler
+	// And then store the new digit counter
 
-		// Removes everything except non-numeric or decimal
-		const newValue = Number(originalValue.replace(/[^0-9.]/g, ''));
+	// Then, our useEffect that formats the value needs to update cursor position
+	//   based off of the digitsBefore ref
 
-		onChange(newValue);
-	};
-
-	const formatValue = (value) => {};
-
-	const handleKeyDownOld = (e) => {
-		// Default handling if selection is not collapsed
-		if (!(e.target.selectionStart === e.target.selectionEnd)) return;
-
-		const value = e.target.value;
-		const selection = e.target.selectionStart;
-
-		// BACKSPACING and we're at least 2 characters in, backspace the number before a comma/period
-		if (
-			e.key === 'Backspace' &&
-			selection > 1 && // At least 2 characters in
-			value.charAt(selection) !== '.' && // Allowed to backspace periods
-			isNaN(value.charAt(selection - 1)) // We have a non-numeric character we need to skip
-		) {
-			// If the character before the cursor is non-numeric, remove the character before that
-			const newValue =
-				value.slice(0, selection - 2) + value.slice(selection - 1, value.length);
-
-			// Prevent React from handling update
-			e.preventDefault();
-			setTimeout(() => {
-				console.log('setting handleKeyDown updated selection');
-				// Fix the cursor position
-				e.target.selectionStart = selection - 1;
-				e.target.selectionEnd = selection - 1;
-			}, 0);
-
-			// Call our onChange handler
-			handleOnChange(null, newValue);
-
-			// Exit
-			return;
-		}
-
-		// DELETING and we're at least 2 characters from the end, delete the number after a space/comma
-		if (
-			e.key === 'Delete' &&
-			selection < value.length - 1 && // At least 2 characters from the end
-			value.charAt(selection) !== '.' && // Allowed to backspace periods
-			isNaN(value.charAt(selection)) // We have a non-numeric character we need to skip
-		) {
-			// If the character after the cursor is non-numeric, remove the character after that
-			const newValue = value.slice(0, selection) + value.slice(selection + 1, value.length);
-
-			// Prevent React from handling update
-			e.preventDefault();
-			setTimeout(() => {
-				console.log('setting handleKeyDown updated selection');
-				// Fix the cursor position after everything else has updated
-				e.target.selectionStart = selection;
-				e.target.selectionEnd = selection;
-			}, 0);
-
-			// Call our onChange handler
-			handleOnChange(null, newValue);
-
-			// Exit
-			return;
-		}
-	};
+	// Add support for $ in the formatting. Also add % handling. More complex.
 
 	const handleKeyDown = (e) => {
-		console.log('e:', e);
-		console.log('e.key.test: ', /\d/.test(e.key));
-
 		let numberValue = value.toString();
 		const textValue = e.target.value;
-
-		// Period, delete, backspace, numbers
-		// Selection
 
 		// Formatted value selection
 		const formattedSelectionStart = e.target.selectionStart;
@@ -169,18 +79,24 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 		const selectionStart = digitsBeforeSelection;
 		const selectionEnd = digitsBeforeSelection + digitsInSelection;
 
+		let newCursor;
+
 		if (e.key === 'Backspace') {
 			// BACKSPACE
 			if (isCollapsed) {
 				// Remove the character before the selection
 				numberValue =
-					numberValue.slice(0, Math.min(selectionStart - 1, 0)) +
+					numberValue.slice(0, Math.max(selectionStart - 1, 0)) +
 					numberValue.slice(selectionEnd, numberValue.length);
+
+				newCursor = selectionStart - 1;
 			} else {
 				// Remove the selected content
 				numberValue =
 					numberValue.slice(0, selectionStart) +
 					numberValue.slice(selectionEnd, numberValue.length);
+
+				newCursor = selectionStart;
 			}
 		} else if (e.key === 'Delete') {
 			// DELETE
@@ -189,14 +105,18 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 				numberValue =
 					numberValue.slice(0, selectionStart) +
 					numberValue.slice(
-						Math.max(selectionEnd + 1, numberValue.length),
+						Math.min(selectionEnd + 1, numberValue.length),
 						numberValue.length
 					);
+
+				newCursor = selectionStart;
 			} else {
 				// Remove the selected content
 				numberValue =
 					numberValue.slice(0, selectionStart) +
 					numberValue.slice(selectionEnd, numberValue.length);
+
+				newCursor = selectionStart;
 			}
 		} else if (e.key === '.') {
 			// PERIOD
@@ -206,6 +126,8 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 					numberValue.slice(0, selectionStart) +
 					e.key +
 					numberValue.slice(selectionEnd, numberValue.length);
+
+				newCursor = selectionStart + 1;
 			}
 		} else if (/\d/.test(e.key.charAt(0))) {
 			// DIGIT
@@ -214,6 +136,13 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 				numberValue.slice(0, selectionStart) +
 				e.key +
 				numberValue.slice(selectionEnd, numberValue.length);
+
+			newCursor = selectionStart + 1;
+		}
+
+		if (newCursor !== undefined) {
+			digitsBeforeSelectionRef.current = newCursor;
+			onChange(Number(numberValue));
 		}
 	};
 
@@ -222,11 +151,12 @@ const NumberInput = ({ value, onChange, className = '', id = '', ...additionalPr
 			type='text'
 			id={id}
 			ref={inputRef}
+			onBlur={() => (digitsBeforeSelectionRef.current = null)}
 			// onKeyDown={(e) => console.log(e)}
 			className={'number-input ' + className}
 			value={formattedValue}
 			onKeyDown={handleKeyDown}
-			onChange={handleOnChange}
+			// onChange={handleOnChange} // NOTE: re-enable for copy/paste
 			{...additionalProps}
 		/>
 	);
@@ -244,4 +174,22 @@ const countDigitsInString = (string) => {
 	}
 
 	return digitCount;
+};
+
+const findCursorPositionForDigits = (string, digits) => {
+	let digitCount = 0;
+
+	for (let i = 0; i <= string.length; i++) {
+		// Count numeric characters
+		if (string.charAt(i) && (!isNaN(string.charAt(i)) || string.charAt(i) === '.')) {
+			digitCount++;
+
+			if (digitCount > digits) {
+				return i;
+			}
+		}
+	}
+
+	return string.length;
+	// return cursor;
 };
