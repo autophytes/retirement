@@ -1,47 +1,49 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import numeral from 'numeral';
 
 const NumberInput = ({
 	onChange: parentOnChange,
-	ref: parentRefHandle,
 	className = '',
 	id = '',
 	value,
 	decimalPlaces, // Positive/Negative rounds to Right/Left of decimal
 	isPercent = false,
 	isCurrency = false,
+	max,
+	min,
 	...additionalProps
 }) => {
-	const [displayValue, setDisplayValue] = useState(() => {
-		console.log('state re-initializing');
+	// STATE
+	const [displayValue, setDisplayValue] = useState(
 		formatNumber({
 			value,
 			decimalPlaces,
 			isPercent,
-		});
-	});
+			max,
+			min,
+		})
+	);
 
-	useEffect(() => {
-		console.log('component is being re-initialized');
-	}, []);
+	// REF
+	const inputRef = useRef(null);
 
 	// When the parent provides a new value, format and render that
 	useEffect(() => {
-		console.log('value changed, updating display value');
 		setDisplayValue(
 			formatNumber({
 				value,
 				decimalPlaces,
 				isPercent,
+				max,
+				min,
 			})
 		);
-	}, [value, decimalPlaces, isPercent]);
+	}, [value, decimalPlaces, isPercent, max, min]);
 
 	// On blur, format the new value and pass the raw value to the parent
 	const handleBlur = (e) => {
 		const cleanValue = Number(e.target.value.toString().replace(/[^0-9.]/g, ''));
-
 		// Return a decimal for percentages.
 		const newValue = isPercent
 			? numeral(cleanValue).divide(100).value() // Without numeral, JS has float errors
@@ -57,6 +59,8 @@ const NumberInput = ({
 					value: newValue,
 					decimalPlaces,
 					isPercent,
+					max,
+					min,
 				})
 			);
 		}
@@ -64,25 +68,24 @@ const NumberInput = ({
 
 	return (
 		<div className={'number-input ' + className}>
-			<span
-				className={isCurrency ? 'currency-symbol flex-row' : ''}
-				// style={
-				// 	isCurrency ? { paddingLeft: '0.5rem', height: '100%', position: 'relative' } : {}
-				// }
-			>
-				{isCurrency ? '$' : ''}
-				<div className='currency-fadeout-right' />
-			</span>
+			{/* "$" PREFIX */}
+			{!!isCurrency && (
+				<span onClick={() => inputRef.current.select()}>
+					<input className='currency-symbol' value={'$'} disabled />
+				</span>
+			)}
+
+			{/* INPUT */}
 			<input
+				{...additionalProps}
 				type='text'
 				id={id}
-				ref={parentRefHandle}
+				ref={inputRef}
 				value={displayValue}
 				onChange={(e) => setDisplayValue(e.target.value)}
 				onBlur={handleBlur}
 				onFocus={(e) => e.target.select()}
 				onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-				{...additionalProps}
 			/>
 		</div>
 	);
@@ -90,18 +93,23 @@ const NumberInput = ({
 
 export default NumberInput;
 
-const formatNumber = ({ value, decimalPlaces, isPercent }) => {
-	console.log('value:', value);
+const formatNumber = ({ value, decimalPlaces, isPercent, max, min }) => {
+	// Apply any maxes/mins
+	const cappedValue = max
+		? Math.min(value, isPercent ? numeral(max).divide(100).value() : max)
+		: value;
+	const flooredValue = min
+		? Math.max(cappedValue, isPercent ? numeral(min).divide(100).value() : min)
+		: cappedValue;
+
 	// Removes non-numeric (or decimal) characters from the number
-	const cleanedValue = value.toString().replace(/[^0-9.]/g, '');
-	console.log('cleanedValue:', cleanedValue);
+	const cleanedValue = flooredValue.toString().replace(/[^0-9.]/g, '');
 
 	// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
 	const numDigits = countDigits(Number(cleanedValue));
 
 	// Use the input to determine number of digits
 	const noRounding = decimalPlaces === undefined;
-	// const inputDecimalPlaces = countDecimals(cleanedValue) + 2);
 
 	// Calculate the rounding
 	const maxSigDigits =
@@ -115,7 +123,6 @@ const formatNumber = ({ value, decimalPlaces, isPercent }) => {
 		maximumFractionDigits: noRounding ? 20 : maxFracDigits,
 		style: isPercent ? 'percent' : 'decimal',
 	};
-	console.log('options:', options);
 
 	return new Intl.NumberFormat('en-US', options).format(cleanedValue);
 };
