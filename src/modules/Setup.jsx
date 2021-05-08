@@ -140,8 +140,10 @@ const Setup = () => {
 							</label>
 							<NumberInput
 								className='number-input'
-								// type='number'
 								id='startingInvestments'
+								// decimalPlaces={1}
+								isCurrency
+								// isPercent
 								aria-labelledby='startingInvestmentsLabel'
 								value={profile.startingInvestments ?? ''}
 								onChange={(value) =>
@@ -150,12 +152,6 @@ const Setup = () => {
 										startingInvestments: value,
 									}))
 								}
-								// onChange={(e) =>
-								// 	setProfile((prev) => ({
-								// 		...prev,
-								// 		startingInvestments: Number(e.target.value),
-								// 	}))
-								// }
 							/>
 							<p></p>
 							<label htmlFor='retirementIncome' id='retirementIncomeLabel'>

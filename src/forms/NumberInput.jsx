@@ -1,195 +1,143 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const NumberInput = ({ value, onChange, className = '', id = '', ...additionalProps }) => {
-	const inputRef = useRef(null);
-	const formattedValueRef = useRef('');
+import numeral from 'numeral';
 
-	const digitsBeforeSelectionRef = useRef(null);
+const NumberInput = ({
+	onChange: parentOnChange,
+	ref: parentRefHandle,
+	className = '',
+	id = '',
+	value,
+	decimalPlaces, // Positive/Negative rounds to Right/Left of decimal
+	isPercent = false,
+	isCurrency = false,
+	...additionalProps
+}) => {
+	const [displayValue, setDisplayValue] = useState(() => {
+		console.log('state re-initializing');
+		formatNumber({
+			value,
+			decimalPlaces,
+			isPercent,
+		});
+	});
 
-	const [formattedValue, setFormattedValue] = useState('');
 	useEffect(() => {
-		formattedValueRef.current = formattedValue;
-	}, [formattedValue]);
+		console.log('component is being re-initialized');
+	}, []);
 
-	// Format and render the new value
+	// When the parent provides a new value, format and render that
 	useEffect(() => {
-		if (!inputRef.current) {
-			setFormattedValue(value);
-			return;
-		}
-
-		// Format to thousands
-		let [part1, part2] = value.toString().split('.', 2);
-		part1 = part1.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
-		const newValue = part1 + (part2 ? '.' + part2 : '');
-		console.log('newValue:', newValue);
-
-		// Always format to the penny for currencies
-		// If the period is the last digit, don't truncate
-		// non-collapsed backspace/delete is deleting extra character
-		// Prefix with a $ for currencies
-		// Add percentage support as well
-		// NOTE TO SELF - useLayoutEffect queued update for selection
-
-		let newTimeout;
-		if (digitsBeforeSelectionRef.current !== null) {
-			let newCursor = findCursorPositionForDigits(newValue, digitsBeforeSelectionRef.current);
-
-			newTimeout = setTimeout(() => {
-				console.log('setting format value updated selection');
-				inputRef.current.selectionStart = newCursor;
-				inputRef.current.selectionEnd = newCursor;
-			});
-		}
-
-		setFormattedValue(newValue);
-
-		// If rerunning before the timeout executes, clear the old timeout
-		return () => clearTimeout(newTimeout);
-	}, [value]);
-
-	// TODO
-	// Have a variable that we store the new cursor position in (digitsBefore variable)
-	// At the end, if that variable is non-null, fire the change handler
-	// And then store the new digit counter
-
-	// Then, our useEffect that formats the value needs to update cursor position
-	//   based off of the digitsBefore ref
-
-	// Add support for $ in the formatting. Also add % handling. More complex.
-
-	const handleKeyDown = (e) => {
-		let numberValue = value.toString();
-		const textValue = e.target.value;
-
-		// Formatted value selection
-		const formattedSelectionStart = e.target.selectionStart;
-		const formattedSelectionEnd = e.target.selectionEnd;
-		const isCollapsed = e.target.selectionStart;
-
-		const digitsBeforeSelection = countDigitsInString(
-			textValue.slice(0, formattedSelectionStart)
+		console.log('value changed, updating display value');
+		setDisplayValue(
+			formatNumber({
+				value,
+				decimalPlaces,
+				isPercent,
+			})
 		);
-		const digitsInSelection = countDigitsInString(
-			textValue.slice(formattedSelectionStart, formattedSelectionEnd)
-		);
+	}, [value, decimalPlaces, isPercent]);
 
-		// Raw value selection
-		const selectionStart = digitsBeforeSelection;
-		const selectionEnd = digitsBeforeSelection + digitsInSelection;
+	// On blur, format the new value and pass the raw value to the parent
+	const handleBlur = (e) => {
+		const cleanValue = Number(e.target.value.toString().replace(/[^0-9.]/g, ''));
 
-		let newCursor;
+		// Return a decimal for percentages.
+		const newValue = isPercent
+			? numeral(cleanValue).divide(100).value() // Without numeral, JS has float errors
+			: cleanValue;
 
-		if (e.key === 'Backspace') {
-			// BACKSPACE
-			if (isCollapsed) {
-				// Remove the character before the selection
-				numberValue =
-					numberValue.slice(0, Math.max(selectionStart - 1, 0)) +
-					numberValue.slice(selectionEnd, numberValue.length);
+		// Call the parent onChange handler.
+		parentOnChange(newValue);
 
-				newCursor = selectionStart - 1;
-			} else {
-				// Remove the selected content
-				numberValue =
-					numberValue.slice(0, selectionStart) +
-					numberValue.slice(selectionEnd, numberValue.length);
-
-				newCursor = selectionStart;
-			}
-		} else if (e.key === 'Delete') {
-			// DELETE
-			if (isCollapsed) {
-				// Remove the character after the selection
-				numberValue =
-					numberValue.slice(0, selectionStart) +
-					numberValue.slice(
-						Math.min(selectionEnd + 1, numberValue.length),
-						numberValue.length
-					);
-
-				newCursor = selectionStart;
-			} else {
-				// Remove the selected content
-				numberValue =
-					numberValue.slice(0, selectionStart) +
-					numberValue.slice(selectionEnd, numberValue.length);
-
-				newCursor = selectionStart;
-			}
-		} else if (e.key === '.') {
-			// PERIOD
-			// If we don't already have a period, insert a period
-			if (numberValue.indexOf('.') === -1) {
-				numberValue =
-					numberValue.slice(0, selectionStart) +
-					e.key +
-					numberValue.slice(selectionEnd, numberValue.length);
-
-				newCursor = selectionStart + 1;
-			}
-		} else if (/\d/.test(e.key.charAt(0))) {
-			// DIGIT
-			// Insert the digit at that point
-			numberValue =
-				numberValue.slice(0, selectionStart) +
-				e.key +
-				numberValue.slice(selectionEnd, numberValue.length);
-
-			newCursor = selectionStart + 1;
-		}
-
-		if (newCursor !== undefined) {
-			digitsBeforeSelectionRef.current = newCursor;
-			onChange(Number(numberValue));
+		// If the underlying value didn't change, format won't happen automatically
+		if (newValue === value) {
+			setDisplayValue(
+				formatNumber({
+					value: newValue,
+					decimalPlaces,
+					isPercent,
+				})
+			);
 		}
 	};
 
 	return (
-		<input
-			type='text'
-			id={id}
-			ref={inputRef}
-			onBlur={() => (digitsBeforeSelectionRef.current = null)}
-			// onKeyDown={(e) => console.log(e)}
-			className={'number-input ' + className}
-			value={formattedValue}
-			onKeyDown={handleKeyDown}
-			// onChange={handleOnChange} // NOTE: re-enable for copy/paste
-			{...additionalProps}
-		/>
+		<div className={'number-input ' + className}>
+			<span
+				className={isCurrency ? 'currency-symbol flex-row' : ''}
+				// style={
+				// 	isCurrency ? { paddingLeft: '0.5rem', height: '100%', position: 'relative' } : {}
+				// }
+			>
+				{isCurrency ? '$' : ''}
+				<div className='currency-fadeout-right' />
+			</span>
+			<input
+				type='text'
+				id={id}
+				ref={parentRefHandle}
+				value={displayValue}
+				onChange={(e) => setDisplayValue(e.target.value)}
+				onBlur={handleBlur}
+				onFocus={(e) => e.target.select()}
+				onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
+				{...additionalProps}
+			/>
+		</div>
 	);
 };
 
 export default NumberInput;
 
-const countDigitsInString = (string) => {
-	let digitCount = 0;
-	for (let i = 0; i < string.length; i++) {
-		// Count numeric characters
-		if (!isNaN(string.charAt(i)) || string.charAt(i) === '.') {
-			digitCount++;
-		}
-	}
+const formatNumber = ({ value, decimalPlaces, isPercent }) => {
+	console.log('value:', value);
+	// Removes non-numeric (or decimal) characters from the number
+	const cleanedValue = value.toString().replace(/[^0-9.]/g, '');
+	console.log('cleanedValue:', cleanedValue);
 
-	return digitCount;
+	// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
+	const numDigits = countDigits(Number(cleanedValue));
+
+	// Use the input to determine number of digits
+	const noRounding = decimalPlaces === undefined;
+	// const inputDecimalPlaces = countDecimals(cleanedValue) + 2);
+
+	// Calculate the rounding
+	const maxSigDigits =
+		decimalPlaces < 0 ? Math.max(numDigits + decimalPlaces + 2, 1) : undefined;
+	const minFracDigits = decimalPlaces >= 0 ? decimalPlaces : undefined;
+	const maxFracDigits = decimalPlaces >= 0 ? decimalPlaces : undefined;
+
+	const options = {
+		maximumSignificantDigits: noRounding ? undefined : maxSigDigits,
+		minimumFractionDigits: noRounding ? 0 : minFracDigits,
+		maximumFractionDigits: noRounding ? 20 : maxFracDigits,
+		style: isPercent ? 'percent' : 'decimal',
+	};
+	console.log('options:', options);
+
+	return new Intl.NumberFormat('en-US', options).format(cleanedValue);
 };
 
-const findCursorPositionForDigits = (string, digits) => {
-	let digitCount = 0;
-
-	for (let i = 0; i <= string.length; i++) {
-		// Count numeric characters
-		if (string.charAt(i) && (!isNaN(string.charAt(i)) || string.charAt(i) === '.')) {
-			digitCount++;
-
-			if (digitCount > digits) {
-				return i;
-			}
-		}
+// Finds the number of whole-number digits. Recursive.
+const countDigits = (number, count = 0) => {
+	// If we haven't rounded down to zero yet, keep incrementing
+	if (number) {
+		return countDigits(Math.floor(number / 10), ++count);
+	} else {
+		// Return the final digit count
+		return count;
 	}
+};
 
-	return string.length;
-	// return cursor;
+const countDecimals = (value) => {
+	const numString = typeof value === 'string' ? value : value.toString();
+
+	const decIndex = numString.lastIndexOf('.');
+	if (decIndex === -1) {
+		return 0;
+	} else {
+		return numString.length - decIndex - 1;
+	}
 };

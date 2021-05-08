@@ -4,6 +4,7 @@ html {
 
 	--color-primary: #0095ff;
 	--color-primary-rgb: 0, 149, 255;
+	--color-background-rgb: 255, 255, 255;
 }
 
 body {
@@ -53,7 +54,44 @@ input:focus {
 }
 
 .number-input {
+	font-size: 1.4rem;
+	border: 1px solid #767676;
+	border-radius: 0.15rem;
+	display: flex;
+	align-items: center;
+}
+.number-input > input {
+	border: none;
 	text-align: right;
+	padding-left: 0;
+}
+.number-input > input:focus {
+	outline: none;
+	border: none;
+	box-shadow: none;
+}
+.number-input:focus-within {
+	box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.number-input .currency-symbol {
+	padding-left: 0.5rem;
+	height: 100%;
+	position: relative;
+}
+
+.number-input .currency-fadeout-right {
+	position: absolute;
+	right: -0.25rem;
+	z-index: 999;
+	width: 0.25rem;
+	height: 100%;
+	background: linear-gradient(
+		to right,
+		rgba(255, 255, 255, 1) 0%,
+		rgba(255, 255, 255, 1) 25%,
+		rgba(255, 255, 255, 0) 100%
+	);
 }
 
 .react-css-collapse-transition {
