@@ -13,8 +13,11 @@ const options = {
 			propagate: false,
 		},
 		title: {
-			display: true,
-			text: (ctx) => 'Fill: ' + ctx.chart.data.datasets[0].fill,
+			display: false,
+			// text: (ctx) => 'Fill: ' + ctx.chart.data.datasets[0].fill,
+		},
+		legend: {
+			display: false,
 		},
 	},
 	interaction: {
@@ -28,6 +31,26 @@ const options = {
 	scales: {
 		y: {
 			min: 0,
+			ticks: {
+				font: {
+					size: 18,
+				},
+				callback: (value, index, values) => {
+					// return '$' + value;
+					return new Intl.NumberFormat('en-US', {
+						style: 'currency',
+						currency: 'USD',
+						maximumFractionDigits: 0,
+					}).format(value);
+				},
+			},
+		},
+		x: {
+			ticks: {
+				font: {
+					size: 18,
+				},
+			},
 		},
 	},
 };

@@ -24,9 +24,33 @@ const AppContextProvider = (props) => {
 		inflationIncome: 0.02,
 		inflationExpenses: 0.03,
 	});
+	const [options, setOptions] = useState({
+		preRetirementReturn: {
+			one: 0.06,
+			two: 0.07,
+			three: 0.08,
+		},
+		postRetirementReturn: {
+			one: 0.06,
+			two: 0.07,
+			three: 0.08,
+		},
+	});
 
 	const updateProfile = useCallback((value, property, parentProperty = null) => {
 		setProfile((prev) => ({
+			...prev,
+			[parentProperty ?? property]: parentProperty
+				? {
+						...prev[parentProperty],
+						[property]: value,
+				  }
+				: value,
+		}));
+	}, []);
+
+	const updateOptions = useCallback((value, property, parentProperty = null) => {
+		setOptions((prev) => ({
 			...prev,
 			[parentProperty ?? property]: parentProperty
 				? {
@@ -43,6 +67,9 @@ const AppContextProvider = (props) => {
 				profile,
 				setProfile,
 				updateProfile,
+				options,
+				setOptions,
+				updateOptions,
 			}}>
 			{props.children}
 		</AppContext.Provider>

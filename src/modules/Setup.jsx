@@ -4,7 +4,9 @@ import { AppContext } from '../context/appContext';
 import NumberInput from '../forms/NumberInput';
 
 const Setup = () => {
-	const { profile, setProfile, updateProfile } = useContext(AppContext);
+	const { profile, setProfile, updateProfile, options, updateOptions } = useContext(
+		AppContext
+	);
 
 	const [showRetirement, setShowRetirement] = useState(true);
 	const [showRetirementAdvanced, setShowRetirementAdvanced] = useState(true);
@@ -169,36 +171,73 @@ const Setup = () => {
 							Additional Options
 						</h3>
 						<Collapse isOpen={showRetirementAdvanced}>
-							<div className='setup-retirement-grid'>
-								<label htmlFor='inflationIncome'>Inflation - Income</label>
-								<NumberInput
-									id='inflationIncome'
-									isPercent
-									decimalPlaces={1}
-									value={profile.inflationIncome ?? ''}
-									onChange={(value) =>
-										setProfile((prev) => ({
-											...prev,
-											inflationIncome: value,
-										}))
-									}
-								/>
-								<p></p>
+							<div className='flex-row'>
+								<div className='setup-retirement-grid'>
+									<label htmlFor='inflationIncome'>Inflation - Income</label>
+									<NumberInput
+										id='inflationIncome'
+										isPercent
+										width='5rem'
+										decimalPlaces={1}
+										value={profile.inflationIncome ?? ''}
+										onChange={(value) =>
+											setProfile((prev) => ({
+												...prev,
+												inflationIncome: value,
+											}))
+										}
+									/>
+									<p></p>
 
-								<label htmlFor='inflationExpenses'>Inflation - Expenses</label>
-								<NumberInput
-									isPercent
-									decimalPlaces={1}
-									id='inflationExpenses'
-									value={profile.inflationExpenses ?? ''}
-									onChange={(value) =>
-										setProfile((prev) => ({
-											...prev,
-											inflationExpenses: value,
-										}))
-									}
-								/>
-								<p></p>
+									<label htmlFor='inflationExpenses'>Inflation - Expenses</label>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										id='inflationExpenses'
+										value={profile.inflationExpenses ?? ''}
+										onChange={(value) =>
+											setProfile((prev) => ({
+												...prev,
+												inflationExpenses: value,
+											}))
+										}
+									/>
+									<p></p>
+								</div>
+
+								<div className='setup-retirement-grid three-input'>
+									<label htmlFor='preRetirementReturn' id='preRetirementReturnLabel'>
+										Pre-Retirement Return
+									</label>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										id='preRetirementReturn'
+										value={options.preRetirementReturn.one}
+										onChange={(value) => {
+											console.log('value:', value);
+											updateOptions(value, 'preRetirementReturn', 'one');
+										}}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='preRetirementReturnLabel'
+										value={options.preRetirementReturn.two}
+										onChange={(value) => updateOptions(value, 'preRetirementReturn', 'two')}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='preRetirementReturnLabel'
+										value={options.preRetirementReturn.three}
+										onChange={(value) => updateOptions(value, 'preRetirementReturn', 'three')}
+									/>
+								</div>
 							</div>
 						</Collapse>
 					</div>

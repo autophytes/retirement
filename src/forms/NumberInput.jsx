@@ -5,11 +5,12 @@ import numeral from 'numeral';
 const NumberInput = ({
 	onChange: parentOnChange,
 	className = '',
-	id = '',
+	id = null,
 	value,
 	decimalPlaces, // Positive/Negative rounds to Right/Left of decimal
 	isPercent = false,
 	isCurrency = false,
+	width = null,
 	max,
 	min,
 	...additionalProps
@@ -82,6 +83,7 @@ const NumberInput = ({
 				id={id}
 				ref={inputRef}
 				value={displayValue}
+				style={{ width: width, minWidth: width }}
 				onChange={(e) => setDisplayValue(e.target.value)}
 				onBlur={handleBlur}
 				onFocus={(e) => e.target.select()}

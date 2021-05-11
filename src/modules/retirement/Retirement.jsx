@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
 
 const Retirement = () => {
-	const { profile, setProfile, updateProfile } = useContext(AppContext);
+	const { profile, options, updateProfile } = useContext(AppContext);
 
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
@@ -159,212 +159,248 @@ const Retirement = () => {
 	}, [results, profile]);
 
 	return (
-		<section className='flex-row'>
-			{/* Plan Variation Toggles */}
-			<div>
-				<div className='variation-section'>
-					<h3>Pre-Retirement Return</h3>
-					<div className='variation-section-buttons'>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.preRetirementReturn === 0.06 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.06, 'preRetirementReturn')}>
-							{(0.06 * 100).toFixed(1)}%
-						</button>
-
-						<button
-							className={
-								'variation-section-button' +
-								(profile.preRetirementReturn === 0.07 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.07, 'preRetirementReturn')}>
-							{(0.07 * 100).toFixed(1)}%
-						</button>
-
-						<button
-							className={
-								'variation-section-button' +
-								(profile.preRetirementReturn === 0.08 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.08, 'preRetirementReturn')}>
-							{(0.08 * 100).toFixed(1)}%
-						</button>
-					</div>
+		<section>
+			{/* Top row of results */}
+			<div className='retirement-results-top-row'>
+				<div className='retirement-results-top-row-section'>
+					<p className='retirement-results-top-row-title'>At Retirement</p>
+					<p className='retirement-results-top-row-subtitle'>(Today Dollars)</p>
+					<p className='retirement-results-top-row-value'>{savingsAtRetirementPV}</p>
 				</div>
 
-				<div className='variation-section'>
-					<h3>Post-Retirement Return</h3>
-					<div className='variation-section-buttons'>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.postRetirementReturn === 0.06 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.06, 'postRetirementReturn')}>
-							{(0.06 * 100).toFixed(1)}%
-						</button>
-
-						<button
-							className={
-								'variation-section-button' +
-								(profile.postRetirementReturn === 0.07 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.07, 'postRetirementReturn')}>
-							{(0.07 * 100).toFixed(1)}%
-						</button>
-
-						<button
-							className={
-								'variation-section-button' +
-								(profile.postRetirementReturn === 0.08 ? ' active' : '')
-							}
-							onClick={() => updateProfile(0.08, 'postRetirementReturn')}>
-							{(0.08 * 100).toFixed(1)}%
-						</button>
-					</div>
+				<div className='retirement-results-top-row-section'>
+					<p className='retirement-results-top-row-title'>At Retirement</p>
+					<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
+					<p className='retirement-results-top-row-value'>{savingsAtRetirementFV}</p>
 				</div>
 
-				<div className='variation-section'>
-					<h3>Income</h3>
-					<div className='variation-section-buttons'>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.retirementIncome === 70000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(70000, 'retirementIncome')}>
-							70,000
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.retirementIncome === 80000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(80000, 'retirementIncome')}>
-							80,000
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.retirementIncome === 90000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(90000, 'retirementIncome')}>
-							90,000
-						</button>
-					</div>
+				<div className='retirement-results-top-row-section'>
+					<p className='retirement-results-top-row-title'>Retirement Income</p>
+					<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
+					<p className='retirement-results-top-row-value'>{incomeAtRetirementFV}</p>
 				</div>
 
-				<div className='variation-section'>
-					<h3>Retirement Age</h3>
-					<div className='variation-section-buttons'>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.retirementAge === 55 ? ' active' : '')
-							}
-							onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
-							55
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.retirementAge === 60 ? ' active' : '')
-							}
-							onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
-							60
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.retirementAge === 65 ? ' active' : '')
-							}
-							onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
-							65
-						</button>
-					</div>
-				</div>
-
-				<div className='variation-section'>
-					<h3>Savings</h3>
-					<div className='variation-section-buttons'>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.annualSavings === 5000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(5000, 'annualSavings', 'primary')}>
-							$5,000
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.annualSavings === 10000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(10000, 'annualSavings', 'primary')}>
-							$10,000
-						</button>
-						<button
-							className={
-								'variation-section-button' +
-								(profile.primary.annualSavings === 15000 ? ' active' : '')
-							}
-							onClick={() => updateProfile(15000, 'annualSavings', 'primary')}>
-							$15,000
-						</button>
-					</div>
+				<div className='retirement-results-top-row-section'>
+					<p className='retirement-results-top-row-title'>Lasts Until 95</p>
+					<p className='retirement-results-top-row-value'>87%</p>
 				</div>
 			</div>
 
 			{/* Plan Results */}
-			<div>
-				{/* Top row of results */}
-				<div className='top-row'>
-					<div className='top-row-section'>
-						<p className='top-row-title'>At Retirement</p>
-						<p className='top-row-subtitle'>(Today Dollars)</p>
-						<p className='top-row-value'>{savingsAtRetirementPV}</p>
+			<div className='flex-row'>
+				{/* Plan Variation Toggles */}
+				<div className='variation-section-wrapper'>
+					<div className='variation-section'>
+						<h3>Pre-Retirement Return</h3>
+						<div className='variation-section-buttons'>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.preRetirementReturn === options.preRetirementReturn.one
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.preRetirementReturn.one, 'preRetirementReturn')
+								}>
+								{(options.preRetirementReturn.one * 100).toFixed(1)}%
+							</button>
+
+							<button
+								className={
+									'variation-section-button' +
+									(profile.preRetirementReturn === options.preRetirementReturn.two
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.preRetirementReturn.two, 'preRetirementReturn')
+								}>
+								{(options.preRetirementReturn.two * 100).toFixed(1)}%
+							</button>
+
+							<button
+								className={
+									'variation-section-button' +
+									(profile.preRetirementReturn === options.preRetirementReturn.three
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.preRetirementReturn.three, 'preRetirementReturn')
+								}>
+								{(options.preRetirementReturn.three * 100).toFixed(1)}%
+							</button>
+						</div>
 					</div>
 
-					<div className='top-row-section'>
-						<p className='top-row-title'>At Retirement</p>
-						<p className='top-row-subtitle'>(Future Dollars)</p>
-						<p className='top-row-value'>{savingsAtRetirementFV}</p>
+					<div className='variation-section'>
+						<h3>Post-Retirement Return</h3>
+						<div className='variation-section-buttons'>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.postRetirementReturn === options.postRetirementReturn.one
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.postRetirementReturn.one, 'postRetirementReturn')
+								}>
+								{(options.postRetirementReturn.one * 100).toFixed(1)}%
+							</button>
+
+							<button
+								className={
+									'variation-section-button' +
+									(profile.postRetirementReturn === options.postRetirementReturn.two
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.postRetirementReturn.two, 'postRetirementReturn')
+								}>
+								{(options.postRetirementReturn.two * 100).toFixed(1)}%
+							</button>
+
+							<button
+								className={
+									'variation-section-button' +
+									(profile.postRetirementReturn === options.postRetirementReturn.three
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									updateProfile(options.postRetirementReturn.three, 'postRetirementReturn')
+								}>
+								{(options.postRetirementReturn.three * 100).toFixed(1)}%
+							</button>
+						</div>
 					</div>
 
-					<div className='top-row-section'>
-						<p className='top-row-title'>Retirement Income</p>
-						<p className='top-row-subtitle'>(Future Dollars)</p>
-						<p className='top-row-value'>{incomeAtRetirementFV}</p>
+					<div className='variation-section'>
+						<h3>Income</h3>
+						<div className='variation-section-buttons'>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.retirementIncome === 70000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(70000, 'retirementIncome')}>
+								70,000
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.retirementIncome === 80000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(80000, 'retirementIncome')}>
+								80,000
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.retirementIncome === 90000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(90000, 'retirementIncome')}>
+								90,000
+							</button>
+						</div>
 					</div>
 
-					<div className='top-row-section'>
-						<p className='top-row-title'>Lasts Until 95</p>
-						<p className='top-row-value'>87%</p>
+					<div className='variation-section'>
+						<h3>Retirement Age</h3>
+						<div className='variation-section-buttons'>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.retirementAge === 55 ? ' active' : '')
+								}
+								onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
+								55
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.retirementAge === 60 ? ' active' : '')
+								}
+								onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
+								60
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.retirementAge === 65 ? ' active' : '')
+								}
+								onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
+								65
+							</button>
+						</div>
+					</div>
+
+					<div className='variation-section'>
+						<h3>Savings</h3>
+						<div className='variation-section-buttons'>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.annualSavings === 5000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(5000, 'annualSavings', 'primary')}>
+								$5,000
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.annualSavings === 10000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(10000, 'annualSavings', 'primary')}>
+								$10,000
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(profile.primary.annualSavings === 15000 ? ' active' : '')
+								}
+								onClick={() => updateProfile(15000, 'annualSavings', 'primary')}>
+								$15,000
+							</button>
+						</div>
 					</div>
 				</div>
 
 				{/* Big boy graph */}
-				<div style={{ width: '1000px', height: '500px', border: '1px solid gray' }}>
+				<div className='retirement-chart-container'>
 					<RetirementChart results={results} />
+
+					{/* Detailed results */}
+					<div className='additional-details-section'>
+						{/* Optional */}
+						<p>Pension (60):</p>
+						<p>$15,000</p>
+
+						<p>Rental Income:</p>
+						<p>$8,000</p>
+
+						<p>Social Security (65):</p>
+						<p>$20,000</p>
+
+						<p>Average negative years:</p>
+						<p>18</p>
+
+						<p>Inflation (Income):</p>
+						<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
+
+						<p>Inflation (Expenses):</p>
+						<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
+
+						<p>Inflation (Pension):</p>
+						<p>2.5%</p>
+					</div>
 				</div>
 
 				{/* Monte Carlo age probabilities */}
-				<div style={{ width: '1000px', height: '30px', border: '1px solid gray' }}></div>
-
-				{/* Detailed results */}
-				<div>
-					{/* Optional */}
-					<p>Pension (60): $15,000</p>
-					<p>Rental Income: $8,000</p>
-					<p>Social Security (65): $20,000</p>
-
-					<p>Average negative years: 18</p>
-					<p>Inflation (Income): {(profile.inflationIncome * 100).toFixed(1)}%</p>
-					<p>Inflation (Expenses): {(profile.inflationExpenses * 100).toFixed(1)}%</p>
-					<p>Inflation (Pension): 2.5%</p>
-				</div>
+				{/* <div style={{ width: '1000px', height: '30px', border: '1px solid gray' }}></div> */}
 			</div>
 		</section>
 	);
