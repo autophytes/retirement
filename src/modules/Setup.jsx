@@ -1,12 +1,11 @@
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Collapse from 'react-css-collapse';
 import { AppContext } from '../context/appContext';
 import NumberInput from '../forms/NumberInput';
 
 const Setup = () => {
-	const { profile, setProfile, updateProfile, options, updateOptions } = useContext(
-		AppContext
-	);
+	const { profile, setProfile, updateProfile, options, updateOptions } =
+		useContext(AppContext);
 
 	const [showRetirement, setShowRetirement] = useState(true);
 	const [showRetirementAdvanced, setShowRetirementAdvanced] = useState(true);
@@ -207,6 +206,7 @@ const Setup = () => {
 								</div>
 
 								<div className='setup-retirement-grid three-input'>
+									{/* PRE */}
 									<label htmlFor='preRetirementReturn' id='preRetirementReturnLabel'>
 										Pre-Retirement Return
 									</label>
@@ -218,7 +218,7 @@ const Setup = () => {
 										value={options.preRetirementReturn.one}
 										onChange={(value) => {
 											console.log('value:', value);
-											updateOptions(value, 'preRetirementReturn', 'one');
+											updateOptions(value, 'one', 'preRetirementReturn');
 										}}
 									/>
 									<NumberInput
@@ -227,7 +227,7 @@ const Setup = () => {
 										width='5rem'
 										aria-labelledby='preRetirementReturnLabel'
 										value={options.preRetirementReturn.two}
-										onChange={(value) => updateOptions(value, 'preRetirementReturn', 'two')}
+										onChange={(value) => updateOptions(value, 'two', 'preRetirementReturn')}
 									/>
 									<NumberInput
 										isPercent
@@ -235,7 +235,71 @@ const Setup = () => {
 										width='5rem'
 										aria-labelledby='preRetirementReturnLabel'
 										value={options.preRetirementReturn.three}
-										onChange={(value) => updateOptions(value, 'preRetirementReturn', 'three')}
+										onChange={(value) => updateOptions(value, 'three', 'preRetirementReturn')}
+									/>
+
+									{/* POST */}
+									<label htmlFor='postRetirementReturn' id='postRetirementReturnLabel'>
+										Post-Retirement Return
+									</label>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										id='postRetirementReturn'
+										value={options.postRetirementReturn.one}
+										onChange={(value) => {
+											console.log('value:', value);
+											updateOptions(value, 'one', 'postRetirementReturn');
+										}}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='postRetirementReturnLabel'
+										value={options.postRetirementReturn.two}
+										onChange={(value) => updateOptions(value, 'two', 'postRetirementReturn')}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='postRetirementReturnLabel'
+										value={options.postRetirementReturn.three}
+										onChange={(value) => updateOptions(value, 'three', 'postRetirementReturn')}
+									/>
+
+									{/* Income */}
+									<label htmlFor='retirementIncomeAdj' id='retirementIncomeAdjLabel'>
+										Retirement Income
+									</label>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										id='retirementIncomeAdj'
+										value={options.retirementIncomeAdj.one}
+										onChange={(value) => {
+											console.log('value:', value);
+											updateOptions(value, 'one', 'retirementIncomeAdj');
+										}}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='retirementIncomeAdjLabel'
+										value={options.retirementIncomeAdj.two}
+										onChange={(value) => updateOptions(value, 'two', 'retirementIncomeAdj')}
+									/>
+									<NumberInput
+										isPercent
+										decimalPlaces={1}
+										width='5rem'
+										aria-labelledby='retirementIncomeAdjLabel'
+										value={options.retirementIncomeAdj.three}
+										onChange={(value) => updateOptions(value, 'three', 'retirementIncomeAdj')}
 									/>
 								</div>
 							</div>

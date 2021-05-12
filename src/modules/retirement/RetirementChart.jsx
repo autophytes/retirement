@@ -98,7 +98,7 @@ const RetirementChart = ({ results }) => {
 			},
 		};
 
-		// eslint-disable-next-line no-console
+		// eslint-disable-next-line
 	}, []);
 
 	// Initialize the chart

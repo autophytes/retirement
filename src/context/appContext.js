@@ -35,7 +35,13 @@ const AppContextProvider = (props) => {
 			two: 0.07,
 			three: 0.08,
 		},
+		retirementIncomeAdj: {
+			one: 0.8,
+			two: 1.0,
+			three: 1.2,
+		},
 	});
+	console.log('options:', options);
 
 	const updateProfile = useCallback((value, property, parentProperty = null) => {
 		setProfile((prev) => ({
@@ -50,6 +56,7 @@ const AppContextProvider = (props) => {
 	}, []);
 
 	const updateOptions = useCallback((value, property, parentProperty = null) => {
+		console.log('value, property, parentProperty:', value, property, parentProperty);
 		setOptions((prev) => ({
 			...prev,
 			[parentProperty ?? property]: parentProperty
