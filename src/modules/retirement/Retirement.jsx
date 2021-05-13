@@ -6,43 +6,24 @@ import RetirementChart from './RetirementChart';
 import RetirementVariations from './RetirementVariations';
 
 const Retirement = () => {
-	const { profile, options, updateProfile } = useContext(AppContext);
+	const { profile, selected, options, updateProfile } = useContext(AppContext);
 
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 
-	// primary: {
-	//   currentAge: 29,
-	//   retirementAge: 65,
-	//   annualSavings: 12000,
-	//   currentIncome: 75000,
-	// },
-	// spouse: {
-	//   currentAge: 32,
-	//   retirementAge: 62,
-	//   annualSavings: 10000,
-	//   currentIncome: 50000,
-	// },
-	// startingInvestments: 50000,
-	// retirementIncome: 70000,
-	// preRetirementReturn: 0.08,
-	// postRetirementReturn: 0.06,
-	// inflationIncome: 0.02,
-	// inflationExpenses: 0.03,
-
 	// Compute the updated projection results
 	const results = useMemo(() => {
+		const { primary, spouse, startingInvestments, inflationIncome, inflationExpenses } =
+			profile;
 		const {
-			primary,
-			spouse,
-			startingInvestments,
 			retirementIncome,
-			inflationIncome,
-			inflationExpenses,
 			preRetirementReturn,
 			postRetirementReturn,
-		} = profile;
+			primaryRetirementAge,
+			spouseRetirementAge,
+		} = selected;
+
 		const endingAge = 100;
 
 		let newResults = [
@@ -81,8 +62,8 @@ const Retirement = () => {
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
 			};
 
-			const hasPrimaryRetired = primary.retirementAge <= currentYear.primary.age;
-			const hasSpouseRetired = spouse.retirementAge <= currentYear.spouse.age;
+			const hasPrimaryRetired = primaryRetirementAge <= currentYear.primary.age;
+			const hasSpouseRetired = spouseRetirementAge <= currentYear.spouse.age;
 			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
 
 			if (
@@ -130,7 +111,7 @@ const Retirement = () => {
 
 		// console.table(newResults);
 		return newResults;
-	}, [profile]);
+	}, [profile, selected]);
 
 	// Extract values to display
 	useEffect(() => {

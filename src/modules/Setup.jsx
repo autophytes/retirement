@@ -4,7 +4,7 @@ import { AppContext } from '../context/appContext';
 import NumberInput from '../forms/NumberInput';
 
 const Setup = () => {
-	const { profile, setProfile, updateProfile, options, updateOptions } =
+	const { profile, setProfile, updateProfile, options, updateOptions, setSelected } =
 		useContext(AppContext);
 
 	const [showRetirement, setShowRetirement] = useState(true);
@@ -60,14 +60,20 @@ const Setup = () => {
 								max={120}
 								aria-labelledby='primaryColumn retirementAgeLabel'
 								value={profile.primary.retirementAge ?? ''}
-								onChange={(value) => updateProfile(value, 'retirementAge', 'primary')}
+								onChange={(value) => {
+									setSelected((prev) => ({ ...prev, primaryRetirementAge: value }));
+									updateProfile(value, 'retirementAge', 'primary');
+								}}
 							/>
 							<NumberInput
 								decimalPlaces={0}
 								max={120}
 								aria-labelledby='spouseColumn retirementAgeLabel'
 								value={profile.spouse.retirementAge ?? ''}
-								onChange={(value) => updateProfile(value, 'retirementAge', 'spouse')}
+								onChange={(value) => {
+									setSelected((prev) => ({ ...prev, spouseRetirementAge: value }));
+									updateProfile(value, 'retirementAge', 'spouse');
+								}}
 							/>
 
 							<label htmlFor='currentIncome' id='currentIncomeLabel'>
@@ -156,6 +162,10 @@ const Setup = () => {
 										...prev,
 										retirementIncome: value,
 									}));
+									setSelected((prev) => ({
+										...prev,
+										retirementIncome: value,
+									}));
 								}}
 							/>
 							<br />
@@ -227,7 +237,10 @@ const Setup = () => {
 										width='5rem'
 										aria-labelledby='preRetirementReturnLabel'
 										value={options.preRetirementReturn.two}
-										onChange={(value) => updateOptions(value, 'two', 'preRetirementReturn')}
+										onChange={(value) => {
+											setSelected((prev) => ({ ...prev, preRetirementReturn: value }));
+											updateOptions(value, 'two', 'preRetirementReturn');
+										}}
 									/>
 									<NumberInput
 										isPercent
@@ -259,7 +272,10 @@ const Setup = () => {
 										width='5rem'
 										aria-labelledby='postRetirementReturnLabel'
 										value={options.postRetirementReturn.two}
-										onChange={(value) => updateOptions(value, 'two', 'postRetirementReturn')}
+										onChange={(value) => {
+											setSelected((prev) => ({ ...prev, postRetirementReturn: value }));
+											updateOptions(value, 'two', 'postRetirementReturn');
+										}}
 									/>
 									<NumberInput
 										isPercent
@@ -291,7 +307,9 @@ const Setup = () => {
 										width='5rem'
 										aria-labelledby='retirementIncomeAdjLabel'
 										value={options.retirementIncomeAdj.two}
-										onChange={(value) => updateOptions(value, 'two', 'retirementIncomeAdj')}
+										onChange={(value) => {
+											updateOptions(value, 'two', 'retirementIncomeAdj');
+										}}
 									/>
 									<NumberInput
 										isPercent

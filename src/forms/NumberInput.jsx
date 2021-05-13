@@ -31,7 +31,6 @@ const NumberInput = ({
 
 	// When the parent provides a new value, format and render that
 	useEffect(() => {
-		console.log('value has changed - we should be formatting!');
 		setDisplayValue(
 			formatNumber({
 				value,
@@ -45,7 +44,6 @@ const NumberInput = ({
 
 	// On blur, format the new value and pass the raw value to the parent
 	const handleBlur = (e) => {
-		console.log('blurred');
 		const cleanValue = Number(e.target.value.toString().replace(/[^0-9.]/g, ''));
 		// Return a decimal for percentages.
 		const newValue = isPercent
@@ -98,7 +96,6 @@ const NumberInput = ({
 export default NumberInput;
 
 const formatNumber = ({ value, decimalPlaces, isPercent, max, min }) => {
-	console.log('isPercent:', isPercent);
 	// Apply any maxes/mins
 	const cappedValue = max
 		? Math.min(value, isPercent ? numeral(max).divide(100).value() : max)

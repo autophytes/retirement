@@ -1,18 +1,20 @@
+import numeral from 'numeral';
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../context/appContext';
 
 const RetirementVariations = () => {
-	const { profile, options, updateProfile } = useContext(AppContext);
+	const { profile, options, updateProfile, selected, setSelected } = useContext(AppContext);
 
 	const [income, setIncome] = useState({ one: 0, two: 0, three: 0 });
 
 	useEffect(() => {
 		let newIncome = {};
 
-		const numDigits = countDigits(profile.retirementIncome);
-
 		for (let property in options.retirementIncomeAdj) {
-			const value = options.retirementIncomeAdj[property];
+			const baseValue = options.retirementIncomeAdj[property];
+			const newValue = baseValue > 1000 ? baseValue : baseValue * profile.retirementIncome;
+
+			const numDigits = countDigits(newValue);
 
 			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
 			const formatOptions = {
@@ -21,19 +23,11 @@ const RetirementVariations = () => {
 				maximumFractionDigits: 0,
 			};
 			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
+			const finalValue = formatObj.format(newValue);
 
-			let newValue;
-			if (value > 1000) {
-				// Dollar value
-				newValue = formatObj.format(value);
-			} else {
-				// Percentage
-				newValue = formatObj.format(value * profile.retirementIncome);
-			}
-
-			newIncome[property + 'String'] = newValue;
+			newIncome[property + 'String'] = finalValue;
 			console.log('newIncome[property string]:', newIncome[property + 'String']);
-			newIncome[property + 'Value'] = Number.parseFloat(newValue);
+			newIncome[property + 'Value'] = numeral(finalValue).value();
 			console.log('newIncome[property value]:', newIncome[property + 'Value']);
 		}
 
@@ -49,12 +43,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.preRetirementReturn === options.preRetirementReturn.one
+							(selected.preRetirementReturn === options.preRetirementReturn.one
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.preRetirementReturn.one, 'preRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								preRetirementReturn: options.preRetirementReturn.one,
+							}))
 						}>
 						{(options.preRetirementReturn.one * 100).toFixed(1)}%
 					</button>
@@ -62,12 +59,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.preRetirementReturn === options.preRetirementReturn.two
+							(selected.preRetirementReturn === options.preRetirementReturn.two
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.preRetirementReturn.two, 'preRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								preRetirementReturn: options.preRetirementReturn.two,
+							}))
 						}>
 						{(options.preRetirementReturn.two * 100).toFixed(1)}%
 					</button>
@@ -75,12 +75,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.preRetirementReturn === options.preRetirementReturn.three
+							(selected.preRetirementReturn === options.preRetirementReturn.three
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.preRetirementReturn.three, 'preRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								preRetirementReturn: options.preRetirementReturn.three,
+							}))
 						}>
 						{(options.preRetirementReturn.three * 100).toFixed(1)}%
 					</button>
@@ -94,12 +97,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.postRetirementReturn === options.postRetirementReturn.one
+							(selected.postRetirementReturn === options.postRetirementReturn.one
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.postRetirementReturn.one, 'postRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								postRetirementReturn: options.postRetirementReturn.one,
+							}))
 						}>
 						{(options.postRetirementReturn.one * 100).toFixed(1)}%
 					</button>
@@ -107,12 +113,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.postRetirementReturn === options.postRetirementReturn.two
+							(selected.postRetirementReturn === options.postRetirementReturn.two
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.postRetirementReturn.two, 'postRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								postRetirementReturn: options.postRetirementReturn.two,
+							}))
 						}>
 						{(options.postRetirementReturn.two * 100).toFixed(1)}%
 					</button>
@@ -120,12 +129,15 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.postRetirementReturn === options.postRetirementReturn.three
+							(selected.postRetirementReturn === options.postRetirementReturn.three
 								? ' active'
 								: '')
 						}
 						onClick={() =>
-							updateProfile(options.postRetirementReturn.three, 'postRetirementReturn')
+							setSelected((prev) => ({
+								...prev,
+								postRetirementReturn: options.postRetirementReturn.three,
+							}))
 						}>
 						{(options.postRetirementReturn.three * 100).toFixed(1)}%
 					</button>
@@ -139,25 +151,31 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.retirementIncome === income.oneValue ? ' active' : '')
+							(selected.retirementIncome === income.oneValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(income.oneValue, 'retirementIncome')}>
+						onClick={() =>
+							setSelected((prev) => ({ ...prev, retirementIncome: income.oneValue }))
+						}>
 						{income.oneString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.retirementIncome === income.twoValue ? ' active' : '')
+							(selected.retirementIncome === income.twoValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(income.twoValue, 'retirementIncome')}>
+						onClick={() =>
+							setSelected((prev) => ({ ...prev, retirementIncome: income.twoValue }))
+						}>
 						{income.twoString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.retirementIncome === income.threeValue ? ' active' : '')
+							(selected.retirementIncome === income.threeValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(income.threeValue, 'retirementIncome')}>
+						onClick={() =>
+							setSelected((prev) => ({ ...prev, retirementIncome: income.threeValue }))
+						}>
 						{income.threeString}
 					</button>
 				</div>
@@ -166,7 +184,40 @@ const RetirementVariations = () => {
 			{/* RETIREMENT AGE */}
 			<div className='variation-section'>
 				<h3>Retirement Age</h3>
+
+				{/* TODO - add retirement age options in setup, then hook up buttons */}
+
+				{/* PRIMARY */}
 				<div className='variation-section-buttons'>
+					<span className='variation-section-button-subtitle'>Primary</span>
+					<button
+						className={
+							'variation-section-button' +
+							(profile.primary.retirementAge === 55 ? ' active' : '')
+						}
+						onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
+						55
+					</button>
+					<button
+						className={
+							'variation-section-button' +
+							(profile.primary.retirementAge === 60 ? ' active' : '')
+						}
+						onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
+						60
+					</button>
+					<button
+						className={
+							'variation-section-button' +
+							(profile.primary.retirementAge === 65 ? ' active' : '')
+						}
+						onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
+						65
+					</button>
+				</div>
+				{/* SPOUSE */}
+				<div className='variation-section-buttons'>
+					<span className='variation-section-button-subtitle'>Spouse</span>
 					<button
 						className={
 							'variation-section-button' +

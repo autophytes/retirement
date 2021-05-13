@@ -182,7 +182,7 @@ input:focus {
 }
 
 .variation-section-wrapper {
-	margin-right: 4rem;
+	margin-right: 3rem;
 }
 
 .variation-section {
@@ -196,6 +196,7 @@ input:focus {
 
 .variation-section-buttons {
 	margin-left: 0.5rem;
+	margin-bottom: 0.25rem;
 }
 
 .variation-section-button {
@@ -216,6 +217,12 @@ input:focus {
 .variation-section-button:hover {
 	color: white;
 	background-color: var(--color-primary);
+}
+
+.variation-section-button-subtitle {
+	display: inline-block;
+	font-weight: bold;
+	width: 4.5rem;
 }
 
 .retirement-results-top-row {

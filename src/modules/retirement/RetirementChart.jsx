@@ -6,7 +6,7 @@ import ChartJS from 'chart.js/auto';
 // https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js
 // https://www.chartjs.org/docs/master/samples/bar/vertical.html
 
-const options = {
+const OPTIONS = {
 	responsive: true,
 	plugins: {
 		filler: {
@@ -56,23 +56,24 @@ const options = {
 };
 
 // For initialization of the ChartJS object
-let chart;
 
 const RetirementChart = ({ results }) => {
 	// REF
+	const chartCanvasRef = useRef(null);
 	const chartRef = useRef(null);
 
 	// Update the chart with data changes
 	useEffect(() => {
-		if (chart) {
-			console.log('rerunning chart update');
+		if (chartRef.current) {
+			// test
+			console.log('rerunning chartRef.current update');
 
 			const labels = results.map((item) => item.primary.age);
 			const data = results.map((item) => item.value);
 
-			chart.data.labels = labels;
-			chart.data.datasets[0].data = data;
-			chart.update();
+			chartRef.current.data.labels = labels;
+			chartRef.current.data.datasets[0].data = data;
+			chartRef.current.update();
 		}
 	}, [results]);
 
@@ -83,7 +84,7 @@ const RetirementChart = ({ results }) => {
 
 		return {
 			type: 'line',
-			options: options,
+			options: OPTIONS,
 			data: {
 				labels: newLabels,
 				datasets: [
@@ -103,14 +104,14 @@ const RetirementChart = ({ results }) => {
 
 	// Initialize the chart
 	useLayoutEffect(() => {
-		if (chartRef.current) {
-			chart = new ChartJS(chartRef.current, config);
+		if (chartCanvasRef.current) {
+			chartRef.current = new ChartJS(chartCanvasRef.current, config);
 		} else {
-			console.log('chartRef not defined yet');
+			console.log('chartCanvasRef not defined yet');
 		}
 	}, [config]);
 
-	return <canvas ref={chartRef}></canvas>;
+	return <canvas ref={chartCanvasRef}></canvas>;
 };
 
 export default RetirementChart;
