@@ -185,34 +185,53 @@ const RetirementVariations = () => {
 			<div className='variation-section'>
 				<h3>Retirement Age</h3>
 
-				{/* TODO - add retirement age options in setup, then hook up buttons */}
-
 				{/* PRIMARY */}
 				<div className='variation-section-buttons'>
 					<span className='variation-section-button-subtitle'>Primary</span>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 55 ? ' active' : '')
+							(selected.primaryRetirementAge === options.retirementAgePrimary.one
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
-						55
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primaryRetirementAge: options.retirementAgePrimary.one,
+							}))
+						}>
+						{options.retirementAgePrimary.one}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 60 ? ' active' : '')
+							(selected.primaryRetirementAge === options.retirementAgePrimary.two
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
-						60
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primaryRetirementAge: options.retirementAgePrimary.two,
+							}))
+						}>
+						{options.retirementAgePrimary.two}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 65 ? ' active' : '')
+							(selected.primaryRetirementAge === options.retirementAgePrimary.three
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
-						65
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primaryRetirementAge: options.retirementAgePrimary.three,
+							}))
+						}>
+						{options.retirementAgePrimary.three}
 					</button>
 				</div>
 				{/* SPOUSE */}
@@ -221,26 +240,47 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 55 ? ' active' : '')
+							(selected.spouseRetirementAge === options.retirementAgeSpouse.one
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(55, 'retirementAge', 'primary')}>
-						55
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseRetirementAge: options.retirementAgeSpouse.one,
+							}))
+						}>
+						{options.retirementAgeSpouse.one}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 60 ? ' active' : '')
+							(selected.spouseRetirementAge === options.retirementAgeSpouse.two
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(60, 'retirementAge', 'primary')}>
-						60
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseRetirementAge: options.retirementAgeSpouse.two,
+							}))
+						}>
+						{options.retirementAgeSpouse.two}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.retirementAge === 65 ? ' active' : '')
+							(selected.spouseRetirementAge === options.retirementAgeSpouse.three
+								? ' active'
+								: '')
 						}
-						onClick={() => updateProfile(65, 'retirementAge', 'primary')}>
-						65
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseRetirementAge: options.retirementAgeSpouse.three,
+							}))
+						}>
+						{options.retirementAgeSpouse.three}
 					</button>
 				</div>
 			</div>

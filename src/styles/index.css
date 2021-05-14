@@ -5,6 +5,7 @@ html {
 	--color-primary: #0095ff;
 	--color-primary-rgb: 0, 149, 255;
 	--color-background-rgb: 255, 255, 255;
+	--color-border: #767676;
 }
 
 body {
@@ -43,7 +44,7 @@ input {
 	font-size: 1.25rem;
 	padding: 0.5rem 0.75rem;
 	width: 8rem;
-	border: 1px solid #767676;
+	border: 1px solid var(--color-border);
 	border-radius: 0.15rem;
 }
 
@@ -55,7 +56,7 @@ input:focus {
 
 .number-input {
 	font-size: 1.25rem;
-	border: 1px solid #767676;
+	border: 1px solid var(--color-border);
 	border-radius: 0.15rem;
 	display: flex;
 	align-items: center;
@@ -317,4 +318,44 @@ input:focus {
 
 .additional-details-section * {
 	padding: 2px 10px;
+}
+
+.checkbox {
+	border-radius: 50%;
+	width: 2rem;
+	height: 2rem;
+	/* border: 1px solid var(--color-border); */
+	border: none;
+	box-shadow: 0 0 0 1px var(--color-border);
+	display: inline-block;
+	flex-shrink: 0;
+	cursor: pointer;
+	user-select: none;
+	padding: 0; /* To override default button styles */
+	background-color: white;
+	margin: 2px;
+}
+
+.checkbox svg {
+	width: 70%;
+	margin: 15%;
+	display: inline-block;
+	visibility: hidden;
+}
+
+.checkbox:hover:not(.checked) svg {
+	visibility: visible;
+	fill: #bbb;
+}
+
+.checkbox.checked,
+.checkbox:active {
+	/* border-color: var(--color-primary);
+	border-width: 2px; */
+	box-shadow: 0 0 0 2px var(--color-primary);
+	/* margin: 0; */
+}
+.checkbox.checked svg {
+	visibility: visible;
+	fill: var(--color-primary);
 }

@@ -21,6 +21,7 @@ const AppContextProvider = (props) => {
 		retirementIncome: 100000,
 		inflationIncome: 0.02,
 		inflationExpenses: 0.03,
+		drawIncomeAfterBothRetired: false,
 	});
 	const [options, setOptions] = useState({
 		preRetirementReturn: {
@@ -38,7 +39,19 @@ const AppContextProvider = (props) => {
 			two: 1.0,
 			three: 1.2,
 		},
+		retirementAgePrimary: {
+			one: 60,
+			two: 62,
+			three: 65,
+		},
+		retirementAgeSpouse: {
+			one: 60,
+			two: 62,
+			three: 65,
+		},
 	});
+	console.log('options:', options);
+
 	const [selected, setSelected] = useState({
 		preRetirementReturn: 0.08,
 		postRetirementReturn: 0.06,

@@ -62,8 +62,8 @@ const Retirement = () => {
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
 			};
 
-			const hasPrimaryRetired = primaryRetirementAge <= currentYear.primary.age;
-			const hasSpouseRetired = spouseRetirementAge <= currentYear.spouse.age;
+			const hasPrimaryRetired = primaryRetirementAge < currentYear.primary.age;
+			const hasSpouseRetired = spouseRetirementAge < currentYear.spouse.age;
 			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
 
 			if (

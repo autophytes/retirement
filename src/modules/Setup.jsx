@@ -1,7 +1,11 @@
 import React, { useContext, useState } from 'react';
-import Collapse from 'react-css-collapse';
-import { AppContext } from '../context/appContext';
+
 import NumberInput from '../forms/NumberInput';
+import CheckSVG from '../assets/CheckSVG';
+
+import { AppContext } from '../context/appContext';
+
+import Collapse from 'react-css-collapse';
 
 const Setup = () => {
 	const { profile, setProfile, updateProfile, options, updateOptions, setSelected } =
@@ -9,6 +13,17 @@ const Setup = () => {
 
 	const [showRetirement, setShowRetirement] = useState(true);
 	const [showRetirementAdvanced, setShowRetirementAdvanced] = useState(true);
+
+	const updateRetirementAge = (value, person) => {
+		setSelected((prev) => ({ ...prev, [person + 'RetirementAge']: value }));
+		updateProfile(value, 'retirementAge', person);
+
+		const parentProperty =
+			person === 'primary' ? 'retirementAgePrimary' : 'retirementAgeSpouse';
+		updateOptions(value - 3, 'one', parentProperty);
+		updateOptions(value, 'two', parentProperty);
+		updateOptions(value + 3, 'three', parentProperty);
+	};
 
 	return (
 		<>
@@ -60,20 +75,14 @@ const Setup = () => {
 								max={120}
 								aria-labelledby='primaryColumn retirementAgeLabel'
 								value={profile.primary.retirementAge ?? ''}
-								onChange={(value) => {
-									setSelected((prev) => ({ ...prev, primaryRetirementAge: value }));
-									updateProfile(value, 'retirementAge', 'primary');
-								}}
+								onChange={(value) => updateRetirementAge(value, 'primary')}
 							/>
 							<NumberInput
 								decimalPlaces={0}
 								max={120}
 								aria-labelledby='spouseColumn retirementAgeLabel'
 								value={profile.spouse.retirementAge ?? ''}
-								onChange={(value) => {
-									setSelected((prev) => ({ ...prev, spouseRetirementAge: value }));
-									updateProfile(value, 'retirementAge', 'spouse');
-								}}
+								onChange={(value) => updateRetirementAge(value, 'spouse')}
 							/>
 
 							<label htmlFor='currentIncome' id='currentIncomeLabel'>
@@ -213,6 +222,22 @@ const Setup = () => {
 										}
 									/>
 									<p></p>
+
+									{/* TODO - need to hook this up to the results calculation */}
+									{/* TODO - toggle display of returns % / $ based on value */}
+
+									<label htmlFor='inflationExpenses'>Income - Both Retired</label>
+									<button
+										className={'checkbox ' + (profile.drawIncomeAfterBothRetired && 'checked')}
+										onClick={() =>
+											setProfile((prev) => ({
+												...prev,
+												drawIncomeAfterBothRetired: !prev.drawIncomeAfterBothRetired,
+											}))
+										}>
+										<CheckSVG />
+									</button>
+									<p></p>
 								</div>
 
 								<div className='setup-retirement-grid three-input'>
@@ -318,6 +343,52 @@ const Setup = () => {
 										aria-labelledby='retirementIncomeAdjLabel'
 										value={options.retirementIncomeAdj.three}
 										onChange={(value) => updateOptions(value, 'three', 'retirementIncomeAdj')}
+									/>
+
+									{/* Age - Primary */}
+									<label htmlFor='retirementAgePrimary' id='retirementAgePrimaryLabel'>
+										Retirement Age - Primary
+									</label>
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										id='retirementAgePrimary'
+										value={options.retirementAgePrimary.one}
+										onChange={(value) => {
+											console.log('value:', value);
+											updateOptions(value, 'one', 'retirementAgePrimary');
+										}}
+									/>
+									<span />
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='retirementAgePrimaryLabel'
+										value={options.retirementAgePrimary.three}
+										onChange={(value) => updateOptions(value, 'three', 'retirementAgePrimary')}
+									/>
+
+									{/* Age - Spouse */}
+									<label htmlFor='retirementAgeSpouse' id='retirementAgeSpouseLabel'>
+										Retirement Age - Spouse
+									</label>
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										id='retirementAgeSpouse'
+										value={options.retirementAgeSpouse.one}
+										onChange={(value) => {
+											console.log('value:', value);
+											updateOptions(value, 'one', 'retirementAgeSpouse');
+										}}
+									/>
+									<span />
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='retirementAgeSpouseLabel'
+										value={options.retirementAgeSpouse.three}
+										onChange={(value) => updateOptions(value, 'three', 'retirementAgeSpouse')}
 									/>
 								</div>
 							</div>
