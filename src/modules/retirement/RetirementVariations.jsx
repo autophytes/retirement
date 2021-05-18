@@ -6,7 +6,12 @@ const RetirementVariations = () => {
 	const { profile, options, updateProfile, selected, setSelected } = useContext(AppContext);
 
 	const [income, setIncome] = useState({ one: 0, two: 0, three: 0 });
+	const [savings, setSavings] = useState({
+		primary: {},
+		spouse: {},
+	});
 
+	// Calculate retirement income buttons
 	useEffect(() => {
 		let newIncome = {};
 
@@ -26,13 +31,71 @@ const RetirementVariations = () => {
 			const finalValue = formatObj.format(newValue);
 
 			newIncome[property + 'String'] = finalValue;
-			console.log('newIncome[property string]:', newIncome[property + 'String']);
 			newIncome[property + 'Value'] = numeral(finalValue).value();
-			console.log('newIncome[property value]:', newIncome[property + 'Value']);
 		}
 
 		setIncome(newIncome);
 	}, [options.retirementIncomeAdj, profile.retirementIncome]);
+
+	// Calculate annual savings buttons
+	useEffect(() => {
+		let newPrimarySavings = {};
+		let newSpouseSavings = {};
+
+		for (let property in options.primarySavingsAdj) {
+			const baseValue = options.primarySavingsAdj[property];
+			const newValue =
+				baseValue > 1000 ? baseValue : baseValue * profile.primary.annualSavings;
+			console.log('newValue:', newValue);
+
+			const numDigits = countDigits(newValue);
+
+			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
+			// subtract 2 to round to the nearest hundred
+			const formatOptions = {
+				maximumSignificantDigits: Math.max(numDigits - 2, 1),
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0,
+			};
+			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
+			const finalValue = formatObj.format(newValue);
+
+			console.log('finalValue:', finalValue);
+			newPrimarySavings[property + 'String'] = finalValue;
+			console.log('numeral(finalValue).value():', numeral(finalValue).value());
+			newPrimarySavings[property + 'Value'] = numeral(finalValue).value();
+		}
+
+		for (let property in options.spouseSavingsAdj) {
+			const baseValue = options.spouseSavingsAdj[property];
+			const newValue = baseValue > 1000 ? baseValue : baseValue * profile.spouse.annualSavings;
+
+			const numDigits = countDigits(newValue);
+
+			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
+			// subtract 2 to round to the nearest hundred
+			const formatOptions = {
+				maximumSignificantDigits: Math.max(numDigits - 2, 1),
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0,
+			};
+			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
+			const finalValue = formatObj.format(newValue);
+
+			newSpouseSavings[property + 'String'] = finalValue;
+			newSpouseSavings[property + 'Value'] = numeral(finalValue).value();
+		}
+
+		setSavings({
+			primary: newPrimarySavings,
+			spouse: newSpouseSavings,
+		});
+	}, [
+		options.primarySavingsAdj,
+		options.spouseSavingsAdj,
+		profile.primary.annualSavings,
+		profile.spouse.annualSavings,
+	]);
 
 	return (
 		<>
@@ -288,30 +351,92 @@ const RetirementVariations = () => {
 			{/* ANNUAL SAVINGS */}
 			<div className='variation-section'>
 				<h3>Savings</h3>
+
+				{/* PRIMARY */}
 				<div className='variation-section-buttons'>
+					<span className='variation-section-button-subtitle'>Primary</span>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.annualSavings === 5000 ? ' active' : '')
+							(selected.primarySavings === savings.primary.oneValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(5000, 'annualSavings', 'primary')}>
-						$5,000
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primarySavings: savings.primary.oneValue,
+							}))
+						}>
+						{savings.primary.oneString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.annualSavings === 10000 ? ' active' : '')
+							(selected.primarySavings === savings.primary.twoValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(10000, 'annualSavings', 'primary')}>
-						$10,000
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primarySavings: savings.primary.twoValue,
+							}))
+						}>
+						{savings.primary.twoString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(profile.primary.annualSavings === 15000 ? ' active' : '')
+							(selected.primarySavings === savings.primary.threeValue ? ' active' : '')
 						}
-						onClick={() => updateProfile(15000, 'annualSavings', 'primary')}>
-						$15,000
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								primarySavings: savings.primary.threeValue,
+							}))
+						}>
+						{savings.primary.threeString}
+					</button>
+				</div>
+
+				{/* SPOUSE */}
+				<div className='variation-section-buttons'>
+					<span className='variation-section-button-subtitle'>Spouse</span>
+					<button
+						className={
+							'variation-section-button' +
+							(selected.spouseSavings === savings.spouse.oneValue ? ' active' : '')
+						}
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseSavings: savings.spouse.oneValue,
+							}))
+						}>
+						{savings.spouse.oneString}
+					</button>
+					<button
+						className={
+							'variation-section-button' +
+							(selected.spouseSavings === savings.spouse.twoValue ? ' active' : '')
+						}
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseSavings: savings.spouse.twoValue,
+							}))
+						}>
+						{savings.spouse.twoString}
+					</button>
+					<button
+						className={
+							'variation-section-button' +
+							(selected.spouseSavings === savings.spouse.threeValue ? ' active' : '')
+						}
+						onClick={() =>
+							setSelected((prev) => ({
+								...prev,
+								spouseSavings: savings.spouse.threeValue,
+							}))
+						}>
+						{savings.spouse.threeString}
 					</button>
 				</div>
 			</div>

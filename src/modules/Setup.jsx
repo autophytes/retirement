@@ -113,14 +113,20 @@ const Setup = () => {
 								id='annualSavings'
 								aria-labelledby='primaryColumn annualSavingsLabel'
 								value={profile.primary.annualSavings ?? ''}
-								onChange={(value) => updateProfile(value, 'annualSavings', 'primary')}
+								onChange={(value) => {
+									setSelected((prev) => ({ ...prev, primarySavings: value }));
+									updateProfile(value, 'annualSavings', 'primary');
+								}}
 							/>
 							<NumberInput
 								decimalPlaces={0}
 								isCurrency
 								aria-labelledby='spouseColumn annualSavingsLabel'
 								value={profile.spouse.annualSavings ?? ''}
-								onChange={(value) => updateProfile(value, 'annualSavings', 'spouse')}
+								onChange={(value) => {
+									setSelected((prev) => ({ ...prev, primarySavings: value }));
+									updateProfile(value, 'annualSavings', 'spouse');
+								}}
 							/>
 
 							{/* 
@@ -223,9 +229,6 @@ const Setup = () => {
 									/>
 									<p></p>
 
-									{/* TODO - need to hook this up to the results calculation */}
-									{/* TODO - toggle display of returns % / $ based on value */}
-
 									<label htmlFor='inflationExpenses'>Income - Both Retired</label>
 									<button
 										className={'checkbox ' + (profile.drawIncomeAfterBothRetired && 'checked')}
@@ -252,7 +255,6 @@ const Setup = () => {
 										id='preRetirementReturn'
 										value={options.preRetirementReturn.one}
 										onChange={(value) => {
-											console.log('value:', value);
 											updateOptions(value, 'one', 'preRetirementReturn');
 										}}
 									/>
@@ -287,7 +289,6 @@ const Setup = () => {
 										id='postRetirementReturn'
 										value={options.postRetirementReturn.one}
 										onChange={(value) => {
-											console.log('value:', value);
 											updateOptions(value, 'one', 'postRetirementReturn');
 										}}
 									/>
@@ -316,19 +317,18 @@ const Setup = () => {
 										Retirement Income
 									</label>
 									<NumberInput
-										isPercent
-										decimalPlaces={1}
+										isPercent={options.retirementIncomeAdj.one < 10}
+										decimalPlaces={options.retirementIncomeAdj.one < 10 ? 1 : 0}
 										width='5rem'
 										id='retirementIncomeAdj'
 										value={options.retirementIncomeAdj.one}
 										onChange={(value) => {
-											console.log('value:', value);
 											updateOptions(value, 'one', 'retirementIncomeAdj');
 										}}
 									/>
 									<NumberInput
-										isPercent
-										decimalPlaces={1}
+										isPercent={options.retirementIncomeAdj.two < 10}
+										decimalPlaces={options.retirementIncomeAdj.two < 10 ? 1 : 0}
 										width='5rem'
 										aria-labelledby='retirementIncomeAdjLabel'
 										value={options.retirementIncomeAdj.two}
@@ -337,12 +337,45 @@ const Setup = () => {
 										}}
 									/>
 									<NumberInput
-										isPercent
-										decimalPlaces={1}
+										isPercent={options.retirementIncomeAdj.three < 10}
+										decimalPlaces={options.retirementIncomeAdj.three < 10 ? 1 : 0}
 										width='5rem'
 										aria-labelledby='retirementIncomeAdjLabel'
 										value={options.retirementIncomeAdj.three}
 										onChange={(value) => updateOptions(value, 'three', 'retirementIncomeAdj')}
+									/>
+
+									{/* Primary Savings */}
+									<label htmlFor='primarySavingsAdj' id='primarySavingsAdjLabel'>
+										Savings - Primary
+									</label>
+									<NumberInput
+										isPercent={options.primarySavingsAdj.one < 10}
+										decimalPlaces={options.primarySavingsAdj.one < 10 ? 1 : 0}
+										width='5rem'
+										id='primarySavingsAdj'
+										value={options.primarySavingsAdj.one}
+										onChange={(value) => {
+											updateOptions(value, 'one', 'primarySavingsAdj');
+										}}
+									/>
+									<NumberInput
+										isPercent={options.primarySavingsAdj.two < 10}
+										decimalPlaces={options.primarySavingsAdj.two < 10 ? 1 : 0}
+										width='5rem'
+										aria-labelledby='primarySavingsAdjLabel'
+										value={options.primarySavingsAdj.two}
+										onChange={(value) => {
+											updateOptions(value, 'two', 'primarySavingsAdj');
+										}}
+									/>
+									<NumberInput
+										isPercent={options.primarySavingsAdj.three < 10}
+										decimalPlaces={options.primarySavingsAdj.three < 10 ? 1 : 0}
+										width='5rem'
+										aria-labelledby='primarySavingsAdjLabel'
+										value={options.primarySavingsAdj.three}
+										onChange={(value) => updateOptions(value, 'three', 'primarySavingsAdj')}
 									/>
 
 									{/* Age - Primary */}
@@ -355,7 +388,6 @@ const Setup = () => {
 										id='retirementAgePrimary'
 										value={options.retirementAgePrimary.one}
 										onChange={(value) => {
-											console.log('value:', value);
 											updateOptions(value, 'one', 'retirementAgePrimary');
 										}}
 									/>
@@ -378,7 +410,6 @@ const Setup = () => {
 										id='retirementAgeSpouse'
 										value={options.retirementAgeSpouse.one}
 										onChange={(value) => {
-											console.log('value:', value);
 											updateOptions(value, 'one', 'retirementAgeSpouse');
 										}}
 									/>

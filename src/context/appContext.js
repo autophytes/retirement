@@ -49,6 +49,16 @@ const AppContextProvider = (props) => {
 			two: 62,
 			three: 65,
 		},
+		primarySavingsAdj: {
+			one: 0.8,
+			two: 1.0,
+			three: 1.2,
+		},
+		spouseSavingsAdj: {
+			one: 0.8,
+			two: 1.0,
+			three: 1.2,
+		},
 	});
 	console.log('options:', options);
 
@@ -58,6 +68,8 @@ const AppContextProvider = (props) => {
 		retirementIncome: 100000,
 		primaryRetirementAge: 65,
 		spouseRetirementAge: 62,
+		primarySavings: 12000,
+		spouseSavings: 10000,
 	});
 	console.log('selected:', selected);
 

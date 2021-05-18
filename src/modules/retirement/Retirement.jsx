@@ -14,14 +14,22 @@ const Retirement = () => {
 
 	// Compute the updated projection results
 	const results = useMemo(() => {
-		const { primary, spouse, startingInvestments, inflationIncome, inflationExpenses } =
-			profile;
+		const {
+			primary,
+			spouse,
+			startingInvestments,
+			inflationIncome,
+			inflationExpenses,
+			drawIncomeAfterBothRetired,
+		} = profile;
 		const {
 			retirementIncome,
 			preRetirementReturn,
 			postRetirementReturn,
 			primaryRetirementAge,
 			spouseRetirementAge,
+			primarySavings,
+			spouseSavings,
 		} = selected;
 
 		const endingAge = 100;
@@ -30,12 +38,12 @@ const Retirement = () => {
 			{
 				primary: {
 					age: primary.currentAge,
-					annualSavings: primary.annualSavings,
+					annualSavings: primarySavings,
 					currentIncome: primary.currentIncome,
 				},
 				spouse: {
 					age: spouse.currentAge,
-					annualSavings: spouse.annualSavings,
+					annualSavings: spouseSavings,
 					currentIncome: spouse.currentIncome,
 				},
 				value: startingInvestments,
@@ -81,17 +89,20 @@ const Retirement = () => {
 				// Pull the person object for the active worker
 				const nonRetiredPerson = hasPrimaryRetired ? prior.spouse : prior.primary;
 
-				// Calculate whether the worker is making more or less than the income they need
+				// Calculate whether the worker is making more or less than the income they needf
 				const spouseIncomeDifference = nonRetiredPerson.currentIncome - prior.incomeNeeded;
 
 				// If they make more, calculate the contribution
-				const contribution = Math.min(
-					Math.max(spouseIncomeDifference, 0),
-					nonRetiredPerson.annualSavings
-				);
+				// If drawing income, then calculate if they can still contribute
+				console.log('drawIncomeAfterBothRetired:', drawIncomeAfterBothRetired);
+				const contribution = drawIncomeAfterBothRetired
+					? nonRetiredPerson.annualSavings
+					: Math.min(Math.max(spouseIncomeDifference, 0), nonRetiredPerson.annualSavings);
 
 				// If they make less, calculate the withdrawal
-				const withdrawal = Math.min(spouseIncomeDifference, 0);
+				const withdrawal = drawIncomeAfterBothRetired
+					? 0
+					: Math.min(spouseIncomeDifference, 0);
 
 				currentYear.value =
 					(prior.value + withdrawal) * (1 + preRetirementReturn) + contribution;
