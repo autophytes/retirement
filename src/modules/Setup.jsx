@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 
 import NumberInput from '../forms/NumberInput';
 import CheckSVG from '../assets/CheckSVG';
@@ -6,6 +6,7 @@ import CheckSVG from '../assets/CheckSVG';
 import { AppContext } from '../context/appContext';
 
 import Collapse from 'react-css-collapse';
+import PlusSignCircleSVG from '../assets/PlusSignCircleSVG';
 
 const Setup = () => {
 	const { profile, setProfile, updateProfile, options, updateOptions, setSelected } =
@@ -25,6 +26,71 @@ const Setup = () => {
 		updateOptions(value + 3, 'three', parentProperty);
 	};
 
+	const updateFutureStream = (prop, incomeObj) => {
+		// ID
+		// Cash
+		// Start years in future
+		// Number of years
+
+		// TODO - Mapping the future income and future savings objects
+
+		setProfile((prev) => {
+			let newProfile = {
+				...prev,
+				[prop]: [...prev[prop]],
+			};
+
+			const futureIndex = newProfile[prop].findIndex((item) => item.id === incomeObj.id);
+			newProfile[prop][futureIndex] = incomeObj;
+
+			return newProfile;
+		});
+	};
+
+	const addFutureStream = (prop) => {
+		let newStream = {
+			id: profile[prop].reduce((acc, item) => (item.id > acc ? item.id : acc), 1) + 1,
+			value: '',
+			yearStart: '',
+			numYears: '',
+		};
+
+		setProfile((prev) => {
+			let newProfile = {
+				...prev,
+				[prop]: [...prev[prop]],
+			};
+
+			newProfile[prop].push(newStream);
+
+			return newProfile;
+		});
+	};
+
+	const deleteFutureStream = (prop, id) => {
+		const newStream = {
+			id: 1,
+			value: '',
+			yearStart: '',
+			numYears: '',
+		};
+
+		const index = profile[prop].findIndex((item) => item.id === id);
+
+		setProfile((prev) => {
+			let newProfile = {
+				...prev,
+				[prop]: [...prev[prop]],
+			};
+
+			newProfile[prop].splice(index, 1);
+
+			newProfile[prop].length === 0 && newProfile[prop].push(newStream);
+
+			return newProfile;
+		});
+	};
+
 	return (
 		<>
 			<section className='setup-section'>
@@ -34,6 +100,7 @@ const Setup = () => {
 				</h3>
 
 				<Collapse isOpen={showRetirement}>
+					{/* BASIC SETTINGS */}
 					<div className='flex-row'>
 						<div className='setup-retirement-grid' style={{ marginRight: '2rem' }}>
 							{/* Frequent Settings */}
@@ -129,6 +196,26 @@ const Setup = () => {
 								}}
 							/>
 
+							{/* PENSION */}
+							<label htmlFor='pension' id='pensionLabel'>
+								Pension
+							</label>
+							<NumberInput
+								decimalPlaces={0}
+								isCurrency
+								id='pension'
+								aria-labelledby='primaryColumn pensionLabel'
+								value={profile.primary.pension ?? ''}
+								onChange={(value) => updateProfile(value, 'pension', 'primary')}
+							/>
+							<NumberInput
+								decimalPlaces={0}
+								isCurrency
+								aria-labelledby='spouseColumn pensionLabel'
+								value={profile.spouse.pension ?? ''}
+								onChange={(value) => updateProfile(value, 'pension', 'spouse')}
+							/>
+
 							{/* 
           // retirement age / income
           // current ages
@@ -187,7 +274,122 @@ const Setup = () => {
 						</div>
 					</div>
 
-					{/* Advanced Settings */}
+					{/* FUTURE CASH FLOWS */}
+					<div className='flex-row'>
+						<div className='setup-retirement-grid four-input'>
+							{/* PRE */}
+							<label id='futureSavings' style={{ display: 'flex', alignItems: 'center' }}>
+								Future Savings
+								<button
+									onClick={() => addFutureStream('futureSavings')}
+									className='setup-retirement-add-button'>
+									<PlusSignCircleSVG />
+								</button>
+							</label>
+							{profile.futureSavings.map((item, i) => (
+								<Fragment key={item.id}>
+									{i === 0 ? null : <span />}
+									<NumberInput
+										isCurrency
+										decimalPlaces={2}
+										aria-labelledby='futureSavings'
+										value={item.value}
+										onChange={(newValue) => {
+											updateFutureStream('futureSavings', {
+												...item,
+												value: newValue,
+											});
+										}}
+									/>
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='futureSavings'
+										value={item.yearStart}
+										onChange={(newValue) => {
+											updateFutureStream('futureSavings', {
+												...item,
+												yearStart: newValue,
+											});
+										}}
+									/>
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='futureSavings'
+										value={item.numYears}
+										onChange={(newValue) => {
+											updateFutureStream('futureSavings', {
+												...item,
+												numYears: newValue,
+											});
+										}}
+									/>
+									<button onClick={() => deleteFutureStream('futureSavings', item.id)}>
+										Delete
+									</button>
+								</Fragment>
+							))}
+						</div>
+						<div className='setup-retirement-grid four-input'>
+							{/* PRE */}
+							<label id='futureIncomes' style={{ display: 'flex', alignItems: 'center' }}>
+								Future Income
+								<button
+									onClick={() => addFutureStream('futureIncomes')}
+									className='setup-retirement-add-button'>
+									<PlusSignCircleSVG />
+								</button>
+							</label>
+							{profile.futureIncomes.map((item, i) => (
+								<Fragment key={item.id}>
+									{i === 0 ? null : <span />}
+									<NumberInput
+										isCurrency
+										decimalPlaces={2}
+										aria-labelledby='futureIncomes'
+										value={item.value}
+										onChange={(newValue) => {
+											updateFutureStream('futureIncomes', {
+												...item,
+												value: newValue,
+											});
+										}}
+									/>
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='futureIncomes'
+										value={item.yearStart}
+										onChange={(newValue) => {
+											updateFutureStream('futureIncomes', {
+												...item,
+												yearStart: newValue,
+											});
+										}}
+									/>
+
+									<NumberInput
+										decimalPlaces={0}
+										width='5rem'
+										aria-labelledby='futureIncomes'
+										value={item.numYears}
+										onChange={(newValue) => {
+											updateFutureStream('futureIncomes', {
+												...item,
+												numYears: newValue,
+											});
+										}}
+									/>
+									<button onClick={() => deleteFutureStream('futureIncomes', item.id)}>
+										Delete
+									</button>
+								</Fragment>
+							))}
+						</div>
+					</div>
+
+					{/* ADVANCED SETTINGS */}
 					<div className='setup-retirement-additional-section'>
 						<h3
 							className='setup-retirement-additional-title'
@@ -376,6 +578,39 @@ const Setup = () => {
 										aria-labelledby='primarySavingsAdjLabel'
 										value={options.primarySavingsAdj.three}
 										onChange={(value) => updateOptions(value, 'three', 'primarySavingsAdj')}
+									/>
+
+									{/* Spouse Savings */}
+									<label htmlFor='spouseSavingsAdj' id='spouseSavingsAdjLabel'>
+										Savings - Spouse
+									</label>
+									<NumberInput
+										isPercent={options.spouseSavingsAdj.one < 10}
+										decimalPlaces={options.spouseSavingsAdj.one < 10 ? 1 : 0}
+										width='5rem'
+										id='spouseSavingsAdj'
+										value={options.spouseSavingsAdj.one}
+										onChange={(value) => {
+											updateOptions(value, 'one', 'spouseSavingsAdj');
+										}}
+									/>
+									<NumberInput
+										isPercent={options.spouseSavingsAdj.two < 10}
+										decimalPlaces={options.spouseSavingsAdj.two < 10 ? 1 : 0}
+										width='5rem'
+										aria-labelledby='spouseSavingsAdjLabel'
+										value={options.spouseSavingsAdj.two}
+										onChange={(value) => {
+											updateOptions(value, 'two', 'spouseSavingsAdj');
+										}}
+									/>
+									<NumberInput
+										isPercent={options.spouseSavingsAdj.three < 10}
+										decimalPlaces={options.spouseSavingsAdj.three < 10 ? 1 : 0}
+										width='5rem'
+										aria-labelledby='spouseSavingsAdjLabel'
+										value={options.spouseSavingsAdj.three}
+										onChange={(value) => updateOptions(value, 'three', 'spouseSavingsAdj')}
 									/>
 
 									{/* Age - Primary */}

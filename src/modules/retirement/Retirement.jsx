@@ -40,11 +40,13 @@ const Retirement = () => {
 					age: primary.currentAge,
 					annualSavings: primarySavings,
 					currentIncome: primary.currentIncome,
+					pension: primary.pension,
 				},
 				spouse: {
 					age: spouse.currentAge,
 					annualSavings: spouseSavings,
 					currentIncome: spouse.currentIncome,
+					pension: spouse.pension,
 				},
 				value: startingInvestments,
 				incomeNeeded: retirementIncome,
@@ -61,11 +63,13 @@ const Retirement = () => {
 					age: primary.currentAge + year,
 					annualSavings: prior.primary.annualSavings * (1 + inflationIncome),
 					currentIncome: prior.primary.currentIncome * (1 + inflationIncome),
+					pension: prior.primary.pension * (1 + inflationIncome),
 				},
 				spouse: {
 					age: spouse.currentAge + year,
 					annualSavings: prior.spouse.annualSavings * (1 + inflationIncome),
 					currentIncome: prior.spouse.currentIncome * (1 + inflationIncome),
+					pension: prior.spouse.pension * (1 + inflationIncome),
 				},
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
 			};
@@ -88,13 +92,13 @@ const Retirement = () => {
 			) {
 				// Pull the person object for the active worker
 				const nonRetiredPerson = hasPrimaryRetired ? prior.spouse : prior.primary;
+				const retiredPerson = hasPrimaryRetired ? prior.primary : prior.spouse;
 
 				// Calculate whether the worker is making more or less than the income they needf
 				const spouseIncomeDifference = nonRetiredPerson.currentIncome - prior.incomeNeeded;
 
 				// If they make more, calculate the contribution
 				// If drawing income, then calculate if they can still contribute
-				console.log('drawIncomeAfterBothRetired:', drawIncomeAfterBothRetired);
 				const contribution = drawIncomeAfterBothRetired
 					? nonRetiredPerson.annualSavings
 					: Math.min(Math.max(spouseIncomeDifference, 0), nonRetiredPerson.annualSavings);
@@ -102,20 +106,15 @@ const Retirement = () => {
 				// If they make less, calculate the withdrawal
 				const withdrawal = drawIncomeAfterBothRetired
 					? 0
-					: Math.min(spouseIncomeDifference, 0);
+					: Math.min(spouseIncomeDifference + retiredPerson.pension, 0);
 
 				currentYear.value =
 					(prior.value + withdrawal) * (1 + preRetirementReturn) + contribution;
 			} else {
-				currentYear.value = prior.value * (1 + postRetirementReturn) - prior.incomeNeeded;
+				currentYear.value =
+					prior.value * (1 + postRetirementReturn) -
+					Math.max(prior.incomeNeeded - (prior.primary.pension + prior.spouse.pension), 0);
 			}
-
-			// if (age <= primary.retirementAge) {
-			// 	currentYear.value =
-			// 		prior.value * (1 + preRetirementReturn) + prior.primaryAnnualSavings;
-			// } else {
-			// 	currentYear.value = prior.value * (1 + postRetirementReturn) - prior.incomeNeeded;
-			// }
 
 			newResults.push(currentYear);
 		}

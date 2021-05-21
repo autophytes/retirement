@@ -140,6 +140,19 @@ input:focus {
 	display: inline-block;
 }
 
+.setup-retirement-add-button {
+	border: none;
+	background-color: transparent;
+	display: flex;
+	align-items: center;
+	width: min-content;
+}
+.setup-retirement-add-button svg {
+	fill: var(--color-primary);
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
 .setup-retirement-grid {
 	display: grid;
 	grid-template-columns: max-content auto auto;
@@ -153,6 +166,9 @@ input:focus {
 
 .setup-retirement-grid.three-input {
 	grid-template-columns: max-content auto auto auto;
+}
+.setup-retirement-grid.four-input {
+	grid-template-columns: max-content auto auto auto auto;
 }
 
 .setup-retirement-grid label {
