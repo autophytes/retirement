@@ -40,6 +40,11 @@ const App = () => {
 				{/* {(currentTab === 'College') && <Mockup />} */}
 				{/* {(currentTab === 'Debt') && <Mockup />} */}
 				{/* {(currentTab === 'SocialSecurity') && <Mockup />} */}
+
+				<p style={{ color: '#555' }}>
+					Disclaimer: this is a work in progress, is likely full of errors right now, and
+					shouldn't be taken as financial advice. Gotta love the finance industry.
+				</p>
 			</div>
 		</>
 	);
