@@ -18,7 +18,9 @@ const App = () => {
 			<nav className='navbar-wrapper'>
 				<nav className='navbar'>
 					{TABS.map((tab) => (
-						<div className={'nav-tab-wrapper' + (currentTab === tab ? ' active' : '')}>
+						<div
+							key={tab}
+							className={'nav-tab-wrapper' + (currentTab === tab ? ' active' : '')}>
 							<button
 								key={tab}
 								className={'nav-tab' + (currentTab === tab ? ' active' : '')}
