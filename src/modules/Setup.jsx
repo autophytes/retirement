@@ -7,13 +7,16 @@ import { AppContext } from '../context/appContext';
 
 import Collapse from 'react-css-collapse';
 import PlusSignCircleSVG from '../assets/PlusSignCircleSVG';
+import CaratDownSVG from '../assets/CaratDownSVG';
+import CloseSVG from '../assets/CloseSVG';
 
-const Setup = () => {
+const Setup = ({ clientName, setClientName }) => {
 	const { profile, setProfile, updateProfile, options, updateOptions, setSelected } =
 		useContext(AppContext);
 
 	const [showRetirement, setShowRetirement] = useState(true);
 	const [showRetirementAdvanced, setShowRetirementAdvanced] = useState(true);
+	const [editingName, setEditingName] = useState(false);
 
 	const updateRetirementAge = (value, person) => {
 		setSelected((prev) => ({ ...prev, [person + 'RetirementAge']: value }));
@@ -93,11 +96,39 @@ const Setup = () => {
 
 	return (
 		<>
-			<section className='setup-section'>
-				{/* RETIREMENT */}
-				<h3 className='setup-section-title' onClick={() => setShowRetirement((prev) => !prev)}>
-					Retirement Settings
-				</h3>
+			{/* CONTACT NAME */}
+			<div className='dashboard-section'>
+				{editingName ? (
+					<input
+						type='text'
+						className='client-name-title-input'
+						autoFocus
+						value={clientName}
+						size={clientName.length}
+						onFocus={(e) => e.target.select()}
+						onChange={(e) => setClientName(e.target.value)}
+						onBlur={(e) => {
+							setClientName(e.target.value || 'Sample Plan');
+							setEditingName(false);
+						}}
+					/>
+				) : (
+					<h2 className='client-name-title' onClick={() => setEditingName(true)}>
+						{clientName}
+					</h2>
+				)}
+			</div>
+
+			{/* RETIREMENT */}
+			<div className='dashboard-section'>
+				<div
+					className='setup-section-title-row'
+					onClick={() => setShowRetirement((prev) => !prev)}>
+					<span className={'setup-section-title-svg' + (!showRetirement ? ' closed' : '')}>
+						<CaratDownSVG />
+					</span>
+					<h3 className='setup-section-title'>Retirement Settings</h3>
+				</div>
 
 				<Collapse isOpen={showRetirement}>
 					{/* BASIC SETTINGS */}
@@ -274,128 +305,151 @@ const Setup = () => {
 						</div>
 					</div>
 
-					{/* FUTURE CASH FLOWS */}
-					<div className='flex-row'>
-						<div className='setup-retirement-grid four-input'>
-							{/* PRE */}
-							<label id='futureSavings' style={{ display: 'flex', alignItems: 'center' }}>
-								Future Savings
-								<button
-									onClick={() => addFutureStream('futureSavings')}
-									className='setup-retirement-add-button'>
-									<PlusSignCircleSVG />
-								</button>
-							</label>
-							{profile.futureSavings.map((item, i) => (
-								<Fragment key={item.id}>
-									{i === 0 ? null : <span />}
-									<NumberInput
-										isCurrency
-										decimalPlaces={2}
-										aria-labelledby='futureSavings'
-										value={item.value}
-										onChange={(newValue) => {
-											updateFutureStream('futureSavings', {
-												...item,
-												value: newValue,
-											});
-										}}
-									/>
-									<NumberInput
-										decimalPlaces={0}
-										width='5rem'
-										aria-labelledby='futureSavings'
-										value={item.yearStart}
-										onChange={(newValue) => {
-											updateFutureStream('futureSavings', {
-												...item,
-												yearStart: newValue,
-											});
-										}}
-									/>
-									<NumberInput
-										decimalPlaces={0}
-										width='5rem'
-										aria-labelledby='futureSavings'
-										value={item.numYears}
-										onChange={(newValue) => {
-											updateFutureStream('futureSavings', {
-												...item,
-												numYears: newValue,
-											});
-										}}
-									/>
-									<button onClick={() => deleteFutureStream('futureSavings', item.id)}>
-										Delete
-									</button>
-								</Fragment>
-							))}
-						</div>
-						<div className='setup-retirement-grid four-input'>
-							{/* PRE */}
-							<label id='futureIncomes' style={{ display: 'flex', alignItems: 'center' }}>
-								Future Income
-								<button
-									onClick={() => addFutureStream('futureIncomes')}
-									className='setup-retirement-add-button'>
-									<PlusSignCircleSVG />
-								</button>
-							</label>
-							{profile.futureIncomes.map((item, i) => (
-								<Fragment key={item.id}>
-									{i === 0 ? null : <span />}
-									<NumberInput
-										isCurrency
-										decimalPlaces={2}
-										aria-labelledby='futureIncomes'
-										value={item.value}
-										onChange={(newValue) => {
-											updateFutureStream('futureIncomes', {
-												...item,
-												value: newValue,
-											});
-										}}
-									/>
-									<NumberInput
-										decimalPlaces={0}
-										width='5rem'
-										aria-labelledby='futureIncomes'
-										value={item.yearStart}
-										onChange={(newValue) => {
-											updateFutureStream('futureIncomes', {
-												...item,
-												yearStart: newValue,
-											});
-										}}
-									/>
+					{/* FUTURE SAVINGS */}
+					<div className='setup-retirement-grid four-input'>
+						<p></p>
+						<label style={{ textAlign: 'center' }}>Value</label>
+						<label style={{ textAlign: 'center' }}>Start</label>
+						<label style={{ textAlign: 'center' }}>Duration</label>
+						<p></p>
 
-									<NumberInput
-										decimalPlaces={0}
-										width='5rem'
-										aria-labelledby='futureIncomes'
-										value={item.numYears}
-										onChange={(newValue) => {
-											updateFutureStream('futureIncomes', {
-												...item,
-												numYears: newValue,
-											});
-										}}
-									/>
-									<button onClick={() => deleteFutureStream('futureIncomes', item.id)}>
-										Delete
-									</button>
-								</Fragment>
-							))}
-						</div>
+						{/* PRE */}
+						<label
+							id='futureSavings'
+							style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}
+							onClick={(e) => e.preventDefault()}>
+							Future Savings
+							<button
+								onClick={() => addFutureStream('futureSavings')}
+								className='setup-retirement-add-button'>
+								<PlusSignCircleSVG />
+							</button>
+						</label>
+						{profile.futureSavings.map((item, i) => (
+							<Fragment key={item.id}>
+								{i === 0 ? null : <span />}
+								<NumberInput
+									isCurrency
+									decimalPlaces={2}
+									aria-labelledby='futureSavings'
+									value={item.value}
+									onChange={(newValue) => {
+										updateFutureStream('futureSavings', {
+											...item,
+											value: newValue,
+										});
+									}}
+								/>
+								<NumberInput
+									decimalPlaces={0}
+									width='5rem'
+									aria-labelledby='futureSavings'
+									value={item.yearStart}
+									onChange={(newValue) => {
+										updateFutureStream('futureSavings', {
+											...item,
+											yearStart: newValue,
+										});
+									}}
+								/>
+								<NumberInput
+									decimalPlaces={0}
+									width='5rem'
+									aria-labelledby='futureSavings'
+									value={item.numYears}
+									onChange={(newValue) => {
+										updateFutureStream('futureSavings', {
+											...item,
+											numYears: newValue,
+										});
+									}}
+								/>
+								<button
+									className='setup-delete-button'
+									onClick={() => deleteFutureStream('futureSavings', item.id)}>
+									<CloseSVG />
+								</button>
+							</Fragment>
+						))}
+
+						{/* FUTURE INCOME */}
+						{/* PRE */}
+						<label
+							id='futureIncomes'
+							style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}
+							onClick={(e) => e.preventDefault()}>
+							Future Income
+							<button
+								onClick={() => addFutureStream('futureIncomes')}
+								className='setup-retirement-add-button'>
+								<PlusSignCircleSVG />
+							</button>
+						</label>
+						{profile.futureIncomes.map((item, i) => (
+							<Fragment key={item.id}>
+								{i === 0 ? null : <span />}
+								<NumberInput
+									isCurrency
+									decimalPlaces={2}
+									aria-labelledby='futureIncomes'
+									value={item.value}
+									onChange={(newValue) => {
+										updateFutureStream('futureIncomes', {
+											...item,
+											value: newValue,
+										});
+									}}
+								/>
+								<NumberInput
+									decimalPlaces={0}
+									width='5rem'
+									aria-labelledby='futureIncomes'
+									value={item.yearStart}
+									onChange={(newValue) => {
+										updateFutureStream('futureIncomes', {
+											...item,
+											yearStart: newValue,
+										});
+									}}
+								/>
+
+								<NumberInput
+									decimalPlaces={0}
+									width='5rem'
+									aria-labelledby='futureIncomes'
+									value={item.numYears}
+									onChange={(newValue) => {
+										updateFutureStream('futureIncomes', {
+											...item,
+											numYears: newValue,
+										});
+									}}
+								/>
+								<button
+									className='setup-delete-button'
+									onClick={() => deleteFutureStream('futureIncomes', item.id)}>
+									<CloseSVG />
+								</button>
+							</Fragment>
+						))}
 					</div>
 
 					{/* ADVANCED SETTINGS */}
 					<div className='setup-retirement-additional-section'>
-						<h3
-							className='setup-retirement-additional-title'
+						{/* RETIREMENT */}
+						<div
+							className='setup-section-title-row'
 							onClick={() => setShowRetirementAdvanced((prev) => !prev)}>
-							Additional Options
-						</h3>
+							<span
+								className={
+									'setup-section-title-svg additional-title' +
+									(!showRetirementAdvanced ? ' closed' : '')
+								}>
+								<CaratDownSVG />
+							</span>
+							<h3 className='setup-retirement-additional-title'>Additional Options</h3>
+						</div>
+
 						<Collapse isOpen={showRetirementAdvanced}>
 							<div className='flex-row'>
 								<div className='setup-retirement-grid'>
@@ -661,8 +715,40 @@ const Setup = () => {
 						</Collapse>
 					</div>
 				</Collapse>
-				<hr />
-			</section>
+			</div>
+
+			{/* COLLEGE */}
+			<div className='dashboard-section'>
+				<div className='setup-section-title-row'>
+					<span className='setup-section-title-svg closed'>
+						<CaratDownSVG />
+					</span>
+					<h3 className='setup-section-title'>College Settings</h3>
+				</div>
+				<div style={{ height: '1px' }} />
+			</div>
+
+			{/* DEBT */}
+			<div className='dashboard-section'>
+				<div className='setup-section-title-row'>
+					<span className='setup-section-title-svg closed'>
+						<CaratDownSVG />
+					</span>
+					<h3 className='setup-section-title'>Debt Settings</h3>
+				</div>
+				<div style={{ height: '1px' }} />
+			</div>
+
+			{/* SOCIAL SECURITY */}
+			<div className='dashboard-section'>
+				<div className='setup-section-title-row'>
+					<span className='setup-section-title-svg closed'>
+						<CaratDownSVG />
+					</span>
+					<h3 className='setup-section-title'>Social Security Settings</h3>
+				</div>
+				<div style={{ height: '1px' }} />
+			</div>
 		</>
 	);
 };

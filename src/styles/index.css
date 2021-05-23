@@ -6,6 +6,7 @@ html {
 	--color-primary-rgb: 0, 149, 255;
 	--color-background-rgb: 255, 255, 255;
 	--color-border: #767676;
+	--color-page-background: #f6f5f3;
 
 	overscroll-behavior: none; /* Prevents page bounce */
 }
@@ -18,16 +19,14 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 
 	overscroll-behavior: none; /* Prevents page bounce */
+
+	background-color: var(--color-page-background);
 }
 
 p,
 h2,
 h3 {
 	margin: 0;
-}
-
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 hr {
@@ -113,6 +112,16 @@ input:focus {
 	display: flex;
 	flex-direction: row;
 }
+.flex-row.center {
+	align-items: center;
+}
+
+.page-container {
+	width: 1284px;
+	max-width: 94%;
+	max-height: 100%;
+	margin: 5.75rem auto 0 auto;
+}
 
 .navbar-wrapper {
 	position: fixed;
@@ -124,7 +133,7 @@ input:focus {
 .navbar {
 	width: calc(100% - 1rem);
 	max-width: 1500px;
-	margin: 0 auto 2rem auto;
+	margin: 0 auto 1.75rem auto;
 
 	display: flex;
 	flex-direction: row;
@@ -142,7 +151,11 @@ input:focus {
 	filter: drop-shadow(0px 0px 6px rgb(0, 0, 0, 0.12))
 		drop-shadow(0px 0px 13px rgb(0, 0, 0, 0.17)) drop-shadow(0px 0px 5px rgb(0, 0, 0, 0.09));
 }
+/* .nav-tab-wrapper {
+	pointer-events: none;
+} */
 .nav-tab-wrapper.active {
+	pointer-events: none; /* prevents unclickable space to the side */
 	z-index: 3;
 	filter: drop-shadow(0px 0px 8px rgb(0, 0, 0, 0.15));
 }
@@ -168,6 +181,7 @@ input:focus {
 	border-bottom: 5px solid transparent;
 
 	z-index: 2;
+	pointer-events: all; /* re-enables pointers disabled in the wrapper */
 }
 
 .nav-tab:focus:not(:focus-visible) {
@@ -188,40 +202,78 @@ input:focus {
 	border-bottom-color: var(--color-primary);
 }
 
-.page-container {
-	width: 1300px;
-	max-width: 90%;
-	max-height: 100%;
-	margin: 6rem auto 0 auto;
+.dashboard-section {
+	border-radius: 1rem;
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.03), 3px 3px 15px rgba(0, 0, 0, 0.05),
+		3px 3px 25px rgba(0, 0, 0, 0.15);
+
+	padding: 1.75rem 1.5rem 0rem 1.75rem; /* Expanded when larger screen size */
+
+	background-color: white;
+	margin-bottom: 2rem;
 }
 
 .client-name-title {
 	font-size: 2rem;
-	margin-bottom: 3rem;
+	line-height: 2.5rem;
+	/* letter-spacing: 4px; */
+	font-weight: bold;
+	margin-bottom: 1.6rem;
+	margin-top: -0.5rem;
 	display: inline-block;
+	color: #333;
+
+	text-shadow: 2px 2px 3px rgb(30 30 30 / 10%);
+	border-bottom: 0.35rem solid;
+	border-color: var(--color-primary);
 }
 
 .client-name-title-input {
 	font-size: 2rem;
 	font-weight: bold;
-	margin-bottom: 2rem;
+	margin-top: -0.5rem;
+	margin-bottom: 1rem;
 	min-width: 12rem;
 	width: unset;
 }
 
 .setup-section {
-	margin: 0 0 2rem 1rem;
+	margin: 0 0 2rem 0;
+}
+
+.setup-section-title-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	cursor: pointer;
+	user-select: none;
+	margin-bottom: 1.75rem;
+
+	border-radius: 0.5rem;
+	margin-left: -0.5rem;
+	padding: 0.25rem 0 0.25rem 0.5rem;
+}
+
+.setup-section-title-row:hover {
+	background-color: rgba(var(--color-primary-rgb), 0.1);
 }
 
 .setup-section-title {
 	font-size: 1.75rem;
-	margin-bottom: 1.5rem;
-	border-left: 4px solid var(--color-primary);
-	padding-left: 0.5rem;
+	padding-left: 0.75rem;
 
-	cursor: pointer;
-	user-select: none;
 	display: inline-block;
+}
+
+.setup-section-title-svg svg {
+	width: 1.5rem;
+	height: 1.5rem;
+	fill: var(--color-primary);
+	transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.setup-section-title-svg.closed svg {
+	transform: rotate(-90deg);
 }
 
 .setup-retirement-add-button {
@@ -230,11 +282,36 @@ input:focus {
 	display: flex;
 	align-items: center;
 	width: min-content;
+	cursor: pointer;
+
+	padding: 0 0.5rem 0 0.6rem;
 }
 .setup-retirement-add-button svg {
 	fill: var(--color-primary);
 	width: 1.5rem;
 	height: 1.5rem;
+	transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.setup-retirement-add-button:hover svg {
+	transform: scale(1.25);
+}
+
+.setup-delete-button {
+	border: none;
+	background-color: inherit;
+	cursor: pointer;
+	padding: 0;
+}
+.setup-delete-button svg {
+	fill: #aaa;
+	width: 1rem;
+	height: 1rem;
+	transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1),
+		fill 100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.setup-delete-button:hover svg {
+	fill: red;
+	transform: scale(1.5);
 }
 
 .setup-retirement-grid {
@@ -245,7 +322,7 @@ input:focus {
 	gap: 0.5rem;
 	grid-gap: 1rem;
 	align-items: center;
-	margin: 1rem 0 4rem 2rem;
+	margin: 0 0 4rem 2rem;
 }
 
 .setup-retirement-grid.three-input {
@@ -270,16 +347,18 @@ input:focus {
 	cursor: pointer;
 	user-select: none;
 	display: inline-block;
-	margin-bottom: 1.5rem;
-	border-left: 3px solid var(--color-primary);
-	padding-left: 0.5rem;
+	/* border-left: 3px solid var(--color-primary); */
+	padding-left: 0.75rem;
+}
+
+.setup-section-title-svg.additional-title svg {
+	width: 1.25rem;
+	height: 1.25rem;
 }
 
 .retirement-chart-container {
 	width: 100%;
 	flex-shrink: 1;
-	/* height: 200px; */
-	/* style={{ width: '1000px', height: '500px' }} */
 }
 
 .variation-section-wrapper {
@@ -301,16 +380,19 @@ input:focus {
 }
 
 .variation-section-button {
-	border-radius: 0.5rem;
-	border: 2px solid var(--color-primary);
+	border-radius: 0.35rem;
+	border: none;
 
-	padding: 0.1rem 0.5rem;
-	margin: 0 0.25rem 0.25rem 0;
-	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	padding: 0.15rem 0.5rem;
+	margin: 0 0.5rem 0.25rem 0;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+
+	/* box-shadow: rgba(50, 50, 93, 0.25) 0px 5px 10px -2px, rgba(0, 0, 0, 0.3) 0px 3px 12px -3px; */
 
 	color: var(--color-primary);
 	background-color: white;
 	font-weight: bold;
+	font-size: 1rem;
 	cursor: pointer;
 }
 
@@ -324,10 +406,13 @@ input:focus {
 	display: inline-block;
 	font-weight: bold;
 	width: 4.5rem;
+	border-left: 3px solid var(--color-primary);
+	padding-left: 0.4rem;
 }
 
 .retirement-results-top-row {
-	margin-bottom: 3rem;
+	/* padding-bottom: 1rem; */
+	padding: 0.5rem 2rem 1.5rem 2rem;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -345,7 +430,8 @@ input:focus {
 
 .retirement-results-top-row-subtitle {
 	font-size: 1rem;
-	font-style: italic;
+	/* font-style: italic; */
+	color: #888;
 }
 .retirement-results-top-row-value {
 	padding: 0.5rem 0 0.25rem 0;

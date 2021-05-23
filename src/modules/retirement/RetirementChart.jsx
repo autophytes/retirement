@@ -111,7 +111,11 @@ const RetirementChart = ({ results }) => {
 		}
 	}, [config]);
 
-	return <canvas ref={chartCanvasRef}></canvas>;
+	return (
+		<section style={{ position: 'relative' }}>
+			<canvas ref={chartCanvasRef}></canvas>
+		</section>
+	);
 };
 
 export default RetirementChart;

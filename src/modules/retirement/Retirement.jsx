@@ -5,7 +5,7 @@ import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
 import RetirementVariations from './RetirementVariations';
 
-const Retirement = () => {
+const Retirement = ({ clientName }) => {
 	const { profile, selected, options, updateProfile } = useContext(AppContext);
 
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
@@ -153,68 +153,75 @@ const Retirement = () => {
 	return (
 		<section>
 			{/* Top row of results */}
-			<div className='retirement-results-top-row'>
-				<div className='retirement-results-top-row-section'>
-					<p className='retirement-results-top-row-title'>At Retirement</p>
-					<p className='retirement-results-top-row-subtitle'>(Today Dollars)</p>
-					<p className='retirement-results-top-row-value'>{savingsAtRetirementPV}</p>
-				</div>
+			<div className='dashboard-section'>
+				<h2 className='client-name-title'>{clientName}</h2>
 
-				<div className='retirement-results-top-row-section'>
-					<p className='retirement-results-top-row-title'>At Retirement</p>
-					<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
-					<p className='retirement-results-top-row-value'>{savingsAtRetirementFV}</p>
-				</div>
+				<div className='retirement-results-top-row'>
+					<div className='retirement-results-top-row-section'>
+						<p className='retirement-results-top-row-title'>At Retirement</p>
+						<p className='retirement-results-top-row-subtitle'>(Today Dollars)</p>
+						<p className='retirement-results-top-row-value'>{savingsAtRetirementPV}</p>
+					</div>
 
-				<div className='retirement-results-top-row-section'>
-					<p className='retirement-results-top-row-title'>Retirement Income</p>
-					<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
-					<p className='retirement-results-top-row-value'>{incomeAtRetirementFV}</p>
-				</div>
+					<div className='retirement-results-top-row-section'>
+						<p className='retirement-results-top-row-title'>At Retirement</p>
+						<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
+						<p className='retirement-results-top-row-value'>{savingsAtRetirementFV}</p>
+					</div>
 
-				<div className='retirement-results-top-row-section'>
-					<p className='retirement-results-top-row-title'>Lasts Until 95</p>
-					<p className='retirement-results-top-row-value'>87%</p>
+					<div className='retirement-results-top-row-section'>
+						<p className='retirement-results-top-row-title'>Retirement Income</p>
+						<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
+						<p className='retirement-results-top-row-value'>{incomeAtRetirementFV}</p>
+					</div>
+
+					<div className='retirement-results-top-row-section'>
+						<p className='retirement-results-top-row-title'>Lasts Until 95</p>
+						<p className='retirement-results-top-row-value'>87%</p>
+					</div>
 				</div>
 			</div>
 
 			{/* Plan Results */}
-			<div className='flex-row'>
+			<div className='flex-row' style={{ gap: '2rem', width: 'calc(100% - 1.75rem)' }}>
 				{/* Plan Variation Toggles */}
-				<div className='variation-section-wrapper'>
+				<div className='dashboard-section'>
 					<RetirementVariations />
 				</div>
 
+				{/* <div style={{ width: '2rem', flexShrink: '0' }}></div> */}
+
 				{/* Big boy graph */}
-				<div className='retirement-chart-container'>
-					<RetirementChart results={results} />
+				<div className='dashboard-section' style={{ width: '100%' }}>
+					<div className='retirement-chart-container'>
+						<RetirementChart results={results} />
 
-					{/* Detailed results */}
-					<div className='additional-details-section'>
-						{/* Optional */}
-						<p>Pension (60):</p>
-						<p>$15,000</p>
+						{/* Detailed results */}
+						<div className='additional-details-section'>
+							{/* Optional */}
+							<p>Pension (60):</p>
+							<p>$15,000</p>
 
-						<p>Rental Income:</p>
-						<p>$8,000</p>
+							<p>Rental Income:</p>
+							<p>$8,000</p>
 
-						<p>Social Security (65):</p>
-						<p>$20,000</p>
+							<p>Social Security (65):</p>
+							<p>$20,000</p>
 
-						<p>Average negative years:</p>
-						<p>18</p>
+							<p>Average negative years:</p>
+							<p>18</p>
 
-						<p>Inflation (Income):</p>
-						<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
+							<p>Inflation (Income):</p>
+							<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
 
-						<p>Inflation (Expenses):</p>
-						<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
+							<p>Inflation (Expenses):</p>
+							<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
 
-						<p>Inflation (Pension):</p>
-						<p>2.5%</p>
+							<p>Inflation (Pension):</p>
+							<p>2.5%</p>
+						</div>
 					</div>
 				</div>
-
 				{/* Monte Carlo age probabilities */}
 				{/* <div style={{ width: '1000px', height: '30px', border: '1px solid gray' }}></div> */}
 			</div>

@@ -252,9 +252,7 @@ const RetirementVariations = () => {
 				<div className='variation-section-buttons'>
 					<span className='variation-section-button-subtitle'>Primary</span>
 				</div>
-				<div
-					className='variation-section-buttons'
-					style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}>
+				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
@@ -305,9 +303,7 @@ const RetirementVariations = () => {
 				<div className='variation-section-buttons'>
 					<span className='variation-section-button-subtitle'>Spouse</span>
 				</div>
-				<div
-					className='variation-section-buttons'
-					style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}>
+				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
@@ -364,9 +360,7 @@ const RetirementVariations = () => {
 				<div className='variation-section-buttons'>
 					<span className='variation-section-button-subtitle'>Primary</span>
 				</div>
-				<div
-					className='variation-section-buttons'
-					style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}>
+				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
@@ -412,9 +406,7 @@ const RetirementVariations = () => {
 				<div className='variation-section-buttons'>
 					<span className='variation-section-button-subtitle'>Spouse</span>
 				</div>
-				<div
-					className='variation-section-buttons'
-					style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}>
+				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
