@@ -329,7 +329,7 @@ input:focus {
 	grid-template-columns: max-content auto auto auto;
 }
 .setup-retirement-grid.four-input {
-	grid-template-columns: max-content auto auto auto auto;
+	grid-template-columns: max-content auto auto auto auto auto;
 }
 
 .setup-retirement-grid label {

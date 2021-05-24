@@ -21,6 +21,8 @@ const Retirement = ({ clientName }) => {
 			inflationIncome,
 			inflationExpenses,
 			drawIncomeAfterBothRetired,
+			futureSavings,
+			futureIncomes,
 		} = profile;
 		const {
 			retirementIncome,
@@ -50,6 +52,12 @@ const Retirement = ({ clientName }) => {
 				},
 				value: startingInvestments,
 				incomeNeeded: retirementIncome,
+				futureSavings: futureSavings.filter(
+					(item) => item.value && item.yearStart && item.numYears
+				),
+				futureIncomes: futureIncomes.filter(
+					(item) => item.value && item.yearStart && item.numYears
+				),
 			},
 		];
 
@@ -72,22 +80,38 @@ const Retirement = ({ clientName }) => {
 					pension: prior.spouse.pension * (1 + inflationIncome),
 				},
 				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
+				futureIncomes: prior.futureIncomes.map((item) => ({
+					...item,
+					value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
+				})),
+				futureSavings: prior.futureSavings.map((item) => ({
+					...item,
+					value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
+				})),
 			};
 
 			const hasPrimaryRetired = primaryRetirementAge < currentYear.primary.age;
 			const hasSpouseRetired = spouseRetirementAge < currentYear.spouse.age;
 			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
 
-			if (
-				// If neither have retired
-				peopleRetired === 0
-			) {
+			// Add any additional savings
+			const additionalIncome = futureIncomes.reduce((acc, item) => {
+				if (year >= item.yearStart && year < item.yearStart + item.numYears) {
+					return acc + item.value;
+				}
+				return acc;
+			}, 0);
+			console.log('additionalIncome:', additionalIncome);
+			const incomeNeeded = prior.incomeNeeded - additionalIncome;
+
+			if (peopleRetired === 0) {
+				// NEITHER HAVE RETIRED
 				currentYear.value =
 					prior.value * (1 + preRetirementReturn) + // Grow the savings
 					prior.primary.annualSavings + // Add the primary's contributions
 					prior.spouse.annualSavings; // Add the spouse's contributions
 			} else if (
-				// If one has retired
+				// ONE HAS RETIRED
 				peopleRetired === 1
 			) {
 				// Pull the person object for the active worker
@@ -95,7 +119,7 @@ const Retirement = ({ clientName }) => {
 				const retiredPerson = hasPrimaryRetired ? prior.primary : prior.spouse;
 
 				// Calculate whether the worker is making more or less than the income they needf
-				const spouseIncomeDifference = nonRetiredPerson.currentIncome - prior.incomeNeeded;
+				const spouseIncomeDifference = nonRetiredPerson.currentIncome - incomeNeeded;
 
 				// If they make more, calculate the contribution
 				// If drawing income, then calculate if they can still contribute
@@ -111,11 +135,22 @@ const Retirement = ({ clientName }) => {
 				currentYear.value =
 					(prior.value + withdrawal) * (1 + preRetirementReturn) + contribution;
 			} else {
+				// TWO HAVE RETIRED
 				currentYear.value =
 					prior.value * (1 + postRetirementReturn) -
-					Math.max(prior.incomeNeeded - (prior.primary.pension + prior.spouse.pension), 0);
+					Math.max(incomeNeeded - (prior.primary.pension + prior.spouse.pension), 0);
 			}
 
+			// Add any additional savings
+			const additionalSavings = futureSavings.reduce((acc, item) => {
+				if (year >= item.yearStart && year < item.yearStart + item.numYears) {
+					return acc + item.value;
+				}
+				return acc;
+			}, 0);
+			currentYear.value += additionalSavings;
+
+			// Store the result
 			newResults.push(currentYear);
 		}
 

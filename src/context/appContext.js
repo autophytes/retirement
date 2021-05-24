@@ -25,6 +25,7 @@ const AppContextProvider = (props) => {
 				value: 10000,
 				yearStart: 5,
 				numYears: 3,
+				shouldInflate: false,
 			},
 		],
 		futureIncomes: [
@@ -33,6 +34,7 @@ const AppContextProvider = (props) => {
 				value: 30000,
 				yearStart: 30,
 				numYears: 5,
+				shouldInflate: false,
 			},
 		],
 		startingInvestments: 150000,

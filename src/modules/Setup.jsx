@@ -30,11 +30,6 @@ const Setup = ({ clientName, setClientName }) => {
 	};
 
 	const updateFutureStream = (prop, incomeObj) => {
-		// ID
-		// Cash
-		// Start years in future
-		// Number of years
-
 		// TODO - Mapping the future income and future savings objects
 
 		setProfile((prev) => {
@@ -56,6 +51,7 @@ const Setup = ({ clientName, setClientName }) => {
 			value: '',
 			yearStart: '',
 			numYears: '',
+			shouldInflate: false,
 		};
 
 		setProfile((prev) => {
@@ -76,6 +72,7 @@ const Setup = ({ clientName, setClientName }) => {
 			value: '',
 			yearStart: '',
 			numYears: '',
+			shouldInflate: false,
 		};
 
 		const index = profile[prop].findIndex((item) => item.id === id);
@@ -311,20 +308,22 @@ const Setup = ({ clientName, setClientName }) => {
 						<label style={{ textAlign: 'center' }}>Value</label>
 						<label style={{ textAlign: 'center' }}>Start</label>
 						<label style={{ textAlign: 'center' }}>Duration</label>
+						<label style={{ textAlign: 'center', margin: '0' }}>Inflate</label>
 						<p></p>
 
 						{/* PRE */}
-						<label
-							id='futureSavings'
-							style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}
-							onClick={(e) => e.preventDefault()}>
-							Future Savings
+						<div className='flex-row center'>
+							<label
+								id='futureSavings'
+								style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}>
+								Future Savings
+							</label>
 							<button
 								onClick={() => addFutureStream('futureSavings')}
 								className='setup-retirement-add-button'>
 								<PlusSignCircleSVG />
 							</button>
-						</label>
+						</div>
 						{profile.futureSavings.map((item, i) => (
 							<Fragment key={item.id}>
 								{i === 0 ? null : <span />}
@@ -365,6 +364,17 @@ const Setup = ({ clientName, setClientName }) => {
 									}}
 								/>
 								<button
+									className={'checkbox ' + (item.shouldInflate && 'checked')}
+									style={{ justifySelf: 'center' }}
+									onClick={() => {
+										updateFutureStream('futureSavings', {
+											...item,
+											shouldInflate: !item.shouldInflate,
+										});
+									}}>
+									<CheckSVG />
+								</button>
+								<button
 									className='setup-delete-button'
 									onClick={() => deleteFutureStream('futureSavings', item.id)}>
 									<CloseSVG />
@@ -374,17 +384,18 @@ const Setup = ({ clientName, setClientName }) => {
 
 						{/* FUTURE INCOME */}
 						{/* PRE */}
-						<label
-							id='futureIncomes'
-							style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}
-							onClick={(e) => e.preventDefault()}>
-							Future Income
+						<div className='flex-row center'>
+							<label
+								id='futureIncomes'
+								style={{ display: 'flex', alignItems: 'center', marginRight: '0' }}>
+								Future Income
+							</label>
 							<button
 								onClick={() => addFutureStream('futureIncomes')}
 								className='setup-retirement-add-button'>
 								<PlusSignCircleSVG />
 							</button>
-						</label>
+						</div>
 						{profile.futureIncomes.map((item, i) => (
 							<Fragment key={item.id}>
 								{i === 0 ? null : <span />}
@@ -425,6 +436,17 @@ const Setup = ({ clientName, setClientName }) => {
 										});
 									}}
 								/>
+								<button
+									className={'checkbox ' + (item.shouldInflate && 'checked')}
+									style={{ justifySelf: 'center' }}
+									onClick={() => {
+										updateFutureStream('futureIncomes', {
+											...item,
+											shouldInflate: !item.shouldInflate,
+										});
+									}}>
+									<CheckSVG />
+								</button>
 								<button
 									className='setup-delete-button'
 									onClick={() => deleteFutureStream('futureIncomes', item.id)}>
