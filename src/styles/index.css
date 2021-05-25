@@ -11,6 +11,12 @@ html {
 	overscroll-behavior: none; /* Prevents page bounce */
 }
 
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 body {
 	margin: 0;
 	font-family: -apple-system, BlinkMac SystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',

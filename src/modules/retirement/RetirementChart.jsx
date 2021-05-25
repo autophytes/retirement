@@ -113,9 +113,9 @@ const RetirementChart = ({ results }) => {
 	}, [config]);
 
 	return (
-		<section style={{ position: 'relative' }}>
+		<div style={{ position: 'relative', width: 'calc(100% - 1.75rem', margin: '0 auto' }}>
 			<canvas ref={chartCanvasRef}></canvas>
-		</section>
+		</div>
 	);
 };
 

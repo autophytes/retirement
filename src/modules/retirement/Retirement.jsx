@@ -218,44 +218,49 @@ const Retirement = ({ clientName }) => {
 			</div>
 
 			{/* Plan Results */}
-			<div className='flex-row' style={{ gap: '2rem', width: 'calc(100% - 1.75rem)' }}>
+			<div
+				className='flex-row'
+				// style={{ width: 'calc(100% - 1.75rem)' }}
+			>
 				{/* Plan Variation Toggles */}
-				<div className='dashboard-section'>
+				<div className='dashboard-section' style={{ marginRight: '2rem' }}>
 					<RetirementVariations />
 				</div>
 
 				{/* <div style={{ width: '2rem', flexShrink: '0' }}></div> */}
 
 				{/* Big boy graph */}
-				<div className='dashboard-section' style={{ width: '100%' }}>
-					<div className='retirement-chart-container'>
-						<RetirementChart results={results} />
+				<div className='dashboard-section' style={{ flexGrow: '1' }}>
+					{/* <div
+						className='retirement-chart-container'
+					> */}
+					<RetirementChart results={results} />
 
-						{/* Detailed results */}
-						<div className='additional-details-section'>
-							{/* Optional */}
-							<p>Pension (60):</p>
-							<p>$15,000</p>
+					{/* Detailed results */}
+					<div className='additional-details-section'>
+						{/* Optional */}
+						<p>Pension (60):</p>
+						<p>$15,000</p>
 
-							<p>Rental Income:</p>
-							<p>$8,000</p>
+						<p>Rental Income:</p>
+						<p>$8,000</p>
 
-							<p>Social Security (65):</p>
-							<p>$20,000</p>
+						<p>Social Security (65):</p>
+						<p>$20,000</p>
 
-							<p>Average negative years:</p>
-							<p>18</p>
+						<p>Average negative years:</p>
+						<p>18</p>
 
-							<p>Inflation (Income):</p>
-							<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
+						<p>Inflation (Income):</p>
+						<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
 
-							<p>Inflation (Expenses):</p>
-							<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
+						<p>Inflation (Expenses):</p>
+						<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
 
-							<p>Inflation (Pension):</p>
-							<p>2.5%</p>
-						</div>
+						<p>Inflation (Pension):</p>
+						<p>2.5%</p>
 					</div>
+					{/* </div> */}
 				</div>
 				{/* Monte Carlo age probabilities */}
 				{/* <div style={{ width: '1000px', height: '30px', border: '1px solid gray' }}></div> */}
