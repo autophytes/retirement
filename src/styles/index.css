@@ -1,6 +1,5 @@
 html {
 	font-size: 14px;
-	box-sizing: border-box;
 
 	--color-primary: #0095ff;
 	--color-primary-rgb: 0, 149, 255;
@@ -101,10 +100,11 @@ input:focus {
 
 .number-input .currency-symbol {
 	min-width: 0;
-	width: 1.25ch;
+	width: 1.7rem;
+	text-align: left;
 	background-color: white;
 	color: #333;
-	padding-left: 0.55rem;
+	padding-left: 0.65rem;
 	padding-right: 0.25rem;
 	border-radius: 0;
 	user-select: none;

@@ -227,13 +227,8 @@ const Retirement = ({ clientName }) => {
 					<RetirementVariations />
 				</div>
 
-				{/* <div style={{ width: '2rem', flexShrink: '0' }}></div> */}
-
 				{/* Big boy graph */}
-				<div className='dashboard-section' style={{ flexGrow: '1' }}>
-					{/* <div
-						className='retirement-chart-container'
-					> */}
+				<div className='dashboard-section' style={{ flexGrow: '1', overflow: 'hidden' }}>
 					<RetirementChart results={results} />
 
 					{/* Detailed results */}
@@ -260,7 +255,6 @@ const Retirement = ({ clientName }) => {
 						<p>Inflation (Pension):</p>
 						<p>2.5%</p>
 					</div>
-					{/* </div> */}
 				</div>
 				{/* Monte Carlo age probabilities */}
 				{/* <div style={{ width: '1000px', height: '30px', border: '1px solid gray' }}></div> */}

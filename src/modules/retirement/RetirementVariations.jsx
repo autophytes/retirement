@@ -3,99 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../context/appContext';
 
 const RetirementVariations = () => {
-	const { profile, options, updateProfile, selected, setSelected } = useContext(AppContext);
-
-	const [income, setIncome] = useState({ one: 0, two: 0, three: 0 });
-	const [savings, setSavings] = useState({
-		primary: {},
-		spouse: {},
-	});
-
-	// Calculate retirement income buttons
-	useEffect(() => {
-		let newIncome = {};
-
-		for (let property in options.retirementIncomeAdj) {
-			const baseValue = options.retirementIncomeAdj[property];
-			const newValue = baseValue > 1000 ? baseValue : baseValue * profile.retirementIncome;
-
-			const numDigits = countDigits(newValue);
-
-			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
-			const formatOptions = {
-				maximumSignificantDigits: Math.max(numDigits - 3, 1),
-				minimumFractionDigits: 0,
-				maximumFractionDigits: 0,
-			};
-			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
-			const finalValue = formatObj.format(newValue);
-
-			newIncome[property + 'String'] = finalValue;
-			newIncome[property + 'Value'] = numeral(finalValue).value();
-		}
-
-		setIncome(newIncome);
-	}, [options.retirementIncomeAdj, profile.retirementIncome]);
-
-	// Calculate annual savings buttons
-	useEffect(() => {
-		let newPrimarySavings = {};
-		let newSpouseSavings = {};
-
-		for (let property in options.primarySavingsAdj) {
-			const baseValue = options.primarySavingsAdj[property];
-			const newValue =
-				baseValue > 1000 ? baseValue : baseValue * profile.primary.annualSavings;
-			console.log('newValue:', newValue);
-
-			const numDigits = countDigits(newValue);
-
-			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
-			// subtract 2 to round to the nearest hundred
-			const formatOptions = {
-				maximumSignificantDigits: Math.max(numDigits - 2, 1),
-				minimumFractionDigits: 0,
-				maximumFractionDigits: 0,
-			};
-			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
-			const finalValue = formatObj.format(newValue);
-
-			console.log('finalValue:', finalValue);
-			newPrimarySavings[property + 'String'] = finalValue;
-			console.log('numeral(finalValue).value():', numeral(finalValue).value());
-			newPrimarySavings[property + 'Value'] = numeral(finalValue).value();
-		}
-
-		for (let property in options.spouseSavingsAdj) {
-			const baseValue = options.spouseSavingsAdj[property];
-			const newValue = baseValue > 1000 ? baseValue : baseValue * profile.spouse.annualSavings;
-
-			const numDigits = countDigits(newValue);
-
-			// Find the length of the whole numbers. Ex. countDigits(123.45) = 3
-			// subtract 2 to round to the nearest hundred
-			const formatOptions = {
-				maximumSignificantDigits: Math.max(numDigits - 2, 1),
-				minimumFractionDigits: 0,
-				maximumFractionDigits: 0,
-			};
-			const formatObj = new Intl.NumberFormat('en-US', formatOptions);
-			const finalValue = formatObj.format(newValue);
-
-			newSpouseSavings[property + 'String'] = finalValue;
-			newSpouseSavings[property + 'Value'] = numeral(finalValue).value();
-		}
-
-		setSavings({
-			primary: newPrimarySavings,
-			spouse: newSpouseSavings,
-		});
-	}, [
-		options.primarySavingsAdj,
-		options.spouseSavingsAdj,
-		profile.primary.annualSavings,
-		profile.spouse.annualSavings,
-	]);
+	const { profile, options, updateProfile, selected, setSelected, buttonOptions } =
+		useContext(AppContext);
 
 	return (
 		<>
@@ -214,32 +123,41 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(selected.retirementIncome === income.oneValue ? ' active' : '')
+							(selected.retirementIncome === buttonOptions.income.oneValue ? ' active' : '')
 						}
 						onClick={() =>
-							setSelected((prev) => ({ ...prev, retirementIncome: income.oneValue }))
+							setSelected((prev) => ({
+								...prev,
+								retirementIncome: buttonOptions.income.oneValue,
+							}))
 						}>
-						{income.oneString}
+						{buttonOptions.income.oneString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.retirementIncome === income.twoValue ? ' active' : '')
+							(selected.retirementIncome === buttonOptions.income.twoValue ? ' active' : '')
 						}
 						onClick={() =>
-							setSelected((prev) => ({ ...prev, retirementIncome: income.twoValue }))
+							setSelected((prev) => ({
+								...prev,
+								retirementIncome: buttonOptions.income.twoValue,
+							}))
 						}>
-						{income.twoString}
+						{buttonOptions.income.twoString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.retirementIncome === income.threeValue ? ' active' : '')
+							(selected.retirementIncome === buttonOptions.income.threeValue ? ' active' : '')
 						}
 						onClick={() =>
-							setSelected((prev) => ({ ...prev, retirementIncome: income.threeValue }))
+							setSelected((prev) => ({
+								...prev,
+								retirementIncome: buttonOptions.income.threeValue,
+							}))
 						}>
-						{income.threeString}
+						{buttonOptions.income.threeString}
 					</button>
 				</div>
 			</div>
@@ -364,41 +282,47 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(selected.primarySavings === savings.primary.oneValue ? ' active' : '')
+							(selected.primarySavings === buttonOptions.savings.primary.oneValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								primarySavings: savings.primary.oneValue,
+								primarySavings: buttonOptions.savings.primary.oneValue,
 							}))
 						}>
-						{savings.primary.oneString}
+						{buttonOptions.savings.primary.oneString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.primarySavings === savings.primary.twoValue ? ' active' : '')
+							(selected.primarySavings === buttonOptions.savings.primary.twoValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								primarySavings: savings.primary.twoValue,
+								primarySavings: buttonOptions.savings.primary.twoValue,
 							}))
 						}>
-						{savings.primary.twoString}
+						{buttonOptions.savings.primary.twoString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.primarySavings === savings.primary.threeValue ? ' active' : '')
+							(selected.primarySavings === buttonOptions.savings.primary.threeValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								primarySavings: savings.primary.threeValue,
+								primarySavings: buttonOptions.savings.primary.threeValue,
 							}))
 						}>
-						{savings.primary.threeString}
+						{buttonOptions.savings.primary.threeString}
 					</button>
 				</div>
 
@@ -410,41 +334,47 @@ const RetirementVariations = () => {
 					<button
 						className={
 							'variation-section-button' +
-							(selected.spouseSavings === savings.spouse.oneValue ? ' active' : '')
+							(selected.spouseSavings === buttonOptions.savings.spouse.oneValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								spouseSavings: savings.spouse.oneValue,
+								spouseSavings: buttonOptions.savings.spouse.oneValue,
 							}))
 						}>
-						{savings.spouse.oneString}
+						{buttonOptions.savings.spouse.oneString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.spouseSavings === savings.spouse.twoValue ? ' active' : '')
+							(selected.spouseSavings === buttonOptions.savings.spouse.twoValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								spouseSavings: savings.spouse.twoValue,
+								spouseSavings: buttonOptions.savings.spouse.twoValue,
 							}))
 						}>
-						{savings.spouse.twoString}
+						{buttonOptions.savings.spouse.twoString}
 					</button>
 					<button
 						className={
 							'variation-section-button' +
-							(selected.spouseSavings === savings.spouse.threeValue ? ' active' : '')
+							(selected.spouseSavings === buttonOptions.savings.spouse.threeValue
+								? ' active'
+								: '')
 						}
 						onClick={() =>
 							setSelected((prev) => ({
 								...prev,
-								spouseSavings: savings.spouse.threeValue,
+								spouseSavings: buttonOptions.savings.spouse.threeValue,
 							}))
 						}>
-						{savings.spouse.threeString}
+						{buttonOptions.savings.spouse.threeString}
 					</button>
 				</div>
 			</div>
@@ -453,14 +383,3 @@ const RetirementVariations = () => {
 };
 
 export default RetirementVariations;
-
-// Finds the number of whole-number digits. Recursive.
-const countDigits = (number, count = 0) => {
-	// If we haven't rounded down to zero yet, keep incrementing
-	if (number) {
-		return countDigits(Math.floor(number / 10), ++count);
-	} else {
-		// Return the final digit count
-		return count;
-	}
-};

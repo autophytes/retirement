@@ -89,6 +89,17 @@ const AppContextProvider = (props) => {
 		primarySavings: 12000,
 		spouseSavings: 10000,
 	});
+	const [buttonOptions, setButtonOptions] = useState({
+		income: {
+			one: 0,
+			two: 0,
+			three: 0,
+		},
+		savings: {
+			primary: {},
+			spouse: {},
+		},
+	});
 
 	const updateProfile = useCallback((value, property, parentProperty = null) => {
 		setProfile((prev) => ({
@@ -126,6 +137,8 @@ const AppContextProvider = (props) => {
 				updateOptions,
 				selected,
 				setSelected,
+				buttonOptions,
+				setButtonOptions,
 			}}>
 			{props.children}
 		</AppContext.Provider>
