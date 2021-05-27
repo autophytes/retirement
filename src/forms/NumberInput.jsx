@@ -72,7 +72,11 @@ const NumberInput = ({
 			{/* "$" PREFIX */}
 			{!!isCurrency && (
 				<span onClick={() => inputRef.current.select()}>
-					<input className='currency-symbol' value={'$'} disabled />
+					<input
+						className={'currency-symbol' + (additionalProps.disabled ? ' disabled' : '')}
+						value={'$'}
+						disabled
+					/>
 				</span>
 			)}
 

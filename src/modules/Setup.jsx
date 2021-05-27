@@ -237,12 +237,22 @@ const Setup = ({ clientName, setClientName }) => {
 							{/* Frequent Settings */}
 
 							<p></p>
-							<label id='primaryColumn' style={{ textAlign: 'center' }}>
+							<label id='primaryColumn' style={{ textAlign: 'center', lineHeight: '1rem' }}>
 								Primary
 							</label>
-							<label id='spouseColumn' style={{ textAlign: 'center' }}>
-								Spouse
-							</label>
+							<div className='flex-row center' style={{ justifyContent: 'center' }}>
+								<label id='spouseColumn' style={{ textAlign: 'center', lineHeight: '1rem' }}>
+									Spouse
+								</label>
+								<button
+									className={'checkbox small ' + (!profile.spouse.isNoSpouse && 'checked')}
+									style={{ justifySelf: 'center' }}
+									onClick={() => {
+										updateProfile(!profile.spouse.isNoSpouse, 'isNoSpouse', 'spouse');
+									}}>
+									<CheckSVG />
+								</button>
+							</div>
 
 							<label htmlFor='currentAge' id='currentAgeLabel'>
 								Current Age
@@ -258,6 +268,7 @@ const Setup = ({ clientName, setClientName }) => {
 							<NumberInput
 								decimalPlaces={0}
 								max={120}
+								disabled={profile.spouse.isNoSpouse}
 								aria-labelledby='spouseColumn currentAgeLabel'
 								value={profile.spouse.currentAge ?? ''}
 								onChange={(value) => updateProfile(value, 'currentAge', 'spouse')}
@@ -278,6 +289,7 @@ const Setup = ({ clientName, setClientName }) => {
 							<NumberInput
 								decimalPlaces={0}
 								max={120}
+								disabled={profile.spouse.isNoSpouse}
 								aria-labelledby='spouseColumn retirementAgeLabel'
 								value={profile.spouse.retirementAge ?? ''}
 								onChange={(value) => updateRetirementAge(value, 'spouse')}
@@ -297,6 +309,7 @@ const Setup = ({ clientName, setClientName }) => {
 							<NumberInput
 								decimalPlaces={0}
 								isCurrency
+								disabled={profile.spouse.isNoSpouse}
 								aria-labelledby='spouseColumn currentIncomeLabel'
 								value={profile.spouse.currentIncome ?? ''}
 								onChange={(value) => updateProfile(value, 'currentIncome', 'spouse')}
@@ -319,6 +332,7 @@ const Setup = ({ clientName, setClientName }) => {
 							<NumberInput
 								decimalPlaces={0}
 								isCurrency
+								disabled={profile.spouse.isNoSpouse}
 								aria-labelledby='spouseColumn annualSavingsLabel'
 								value={profile.spouse.annualSavings ?? ''}
 								onChange={(value) => {
@@ -342,6 +356,7 @@ const Setup = ({ clientName, setClientName }) => {
 							<NumberInput
 								decimalPlaces={0}
 								isCurrency
+								disabled={profile.spouse.isNoSpouse}
 								aria-labelledby='spouseColumn pensionLabel'
 								value={profile.spouse.pension ?? ''}
 								onChange={(value) => updateProfile(value, 'pension', 'spouse')}
@@ -728,7 +743,7 @@ const Setup = ({ clientName, setClientName }) => {
 
 									{/* Primary Savings */}
 									<label htmlFor='primarySavingsAdj' id='primarySavingsAdjLabel'>
-										Savings - Primary
+										Savings{profile.spouse.isNoSpouse ? '' : ' - Primary'}
 									</label>
 									<NumberInput
 										isPercent={options.primarySavingsAdj.one < 10}
@@ -760,41 +775,45 @@ const Setup = ({ clientName, setClientName }) => {
 									/>
 
 									{/* Spouse Savings */}
-									<label htmlFor='spouseSavingsAdj' id='spouseSavingsAdjLabel'>
-										Savings - Spouse
-									</label>
-									<NumberInput
-										isPercent={options.spouseSavingsAdj.one < 10}
-										decimalPlaces={options.spouseSavingsAdj.one < 10 ? 1 : 0}
-										width='5.75rem'
-										id='spouseSavingsAdj'
-										value={options.spouseSavingsAdj.one}
-										onChange={(value) => {
-											updateOptions(value, 'one', 'spouseSavingsAdj');
-										}}
-									/>
-									<NumberInput
-										isPercent={options.spouseSavingsAdj.two < 10}
-										decimalPlaces={options.spouseSavingsAdj.two < 10 ? 1 : 0}
-										width='5.75rem'
-										aria-labelledby='spouseSavingsAdjLabel'
-										value={options.spouseSavingsAdj.two}
-										onChange={(value) => {
-											updateOptions(value, 'two', 'spouseSavingsAdj');
-										}}
-									/>
-									<NumberInput
-										isPercent={options.spouseSavingsAdj.three < 10}
-										decimalPlaces={options.spouseSavingsAdj.three < 10 ? 1 : 0}
-										width='5.75rem'
-										aria-labelledby='spouseSavingsAdjLabel'
-										value={options.spouseSavingsAdj.three}
-										onChange={(value) => updateOptions(value, 'three', 'spouseSavingsAdj')}
-									/>
+									{!profile.spouse.isNoSpouse && (
+										<>
+											<label htmlFor='spouseSavingsAdj' id='spouseSavingsAdjLabel'>
+												Savings - Spouse
+											</label>
+											<NumberInput
+												isPercent={options.spouseSavingsAdj.one < 10}
+												decimalPlaces={options.spouseSavingsAdj.one < 10 ? 1 : 0}
+												width='5.75rem'
+												id='spouseSavingsAdj'
+												value={options.spouseSavingsAdj.one}
+												onChange={(value) => {
+													updateOptions(value, 'one', 'spouseSavingsAdj');
+												}}
+											/>
+											<NumberInput
+												isPercent={options.spouseSavingsAdj.two < 10}
+												decimalPlaces={options.spouseSavingsAdj.two < 10 ? 1 : 0}
+												width='5.75rem'
+												aria-labelledby='spouseSavingsAdjLabel'
+												value={options.spouseSavingsAdj.two}
+												onChange={(value) => {
+													updateOptions(value, 'two', 'spouseSavingsAdj');
+												}}
+											/>
+											<NumberInput
+												isPercent={options.spouseSavingsAdj.three < 10}
+												decimalPlaces={options.spouseSavingsAdj.three < 10 ? 1 : 0}
+												width='5.75rem'
+												aria-labelledby='spouseSavingsAdjLabel'
+												value={options.spouseSavingsAdj.three}
+												onChange={(value) => updateOptions(value, 'three', 'spouseSavingsAdj')}
+											/>
+										</>
+									)}
 
 									{/* Age - Primary */}
 									<label htmlFor='retirementAgePrimary' id='retirementAgePrimaryLabel'>
-										Retirement Age - Primary
+										Retirement Age{profile.spouse.isNoSpouse ? '' : ' - Primary'}
 									</label>
 									<NumberInput
 										decimalPlaces={0}
@@ -815,26 +834,32 @@ const Setup = ({ clientName, setClientName }) => {
 									/>
 
 									{/* Age - Spouse */}
-									<label htmlFor='retirementAgeSpouse' id='retirementAgeSpouseLabel'>
-										Retirement Age - Spouse
-									</label>
-									<NumberInput
-										decimalPlaces={0}
-										width='5.75rem'
-										id='retirementAgeSpouse'
-										value={options.retirementAgeSpouse.one}
-										onChange={(value) => {
-											updateOptions(value, 'one', 'retirementAgeSpouse');
-										}}
-									/>
-									<span />
-									<NumberInput
-										decimalPlaces={0}
-										width='5.75rem'
-										aria-labelledby='retirementAgeSpouseLabel'
-										value={options.retirementAgeSpouse.three}
-										onChange={(value) => updateOptions(value, 'three', 'retirementAgeSpouse')}
-									/>
+									{!profile.spouse.isNoSpouse && (
+										<>
+											<label htmlFor='retirementAgeSpouse' id='retirementAgeSpouseLabel'>
+												Retirement Age - Spouse
+											</label>
+											<NumberInput
+												decimalPlaces={0}
+												width='5.75rem'
+												id='retirementAgeSpouse'
+												value={options.retirementAgeSpouse.one}
+												onChange={(value) => {
+													updateOptions(value, 'one', 'retirementAgeSpouse');
+												}}
+											/>
+											<span />
+											<NumberInput
+												decimalPlaces={0}
+												width='5.75rem'
+												aria-labelledby='retirementAgeSpouseLabel'
+												value={options.retirementAgeSpouse.three}
+												onChange={(value) =>
+													updateOptions(value, 'three', 'retirementAgeSpouse')
+												}
+											/>
+										</>
+									)}
 								</div>
 							</div>
 						</Collapse>

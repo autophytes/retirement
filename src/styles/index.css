@@ -75,6 +75,11 @@ input:focus {
 	box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
 }
 
+input:disabled {
+	background-color: rgba(239, 239, 239, 0.6);
+	/* color: rgb(84, 84, 84); */
+}
+
 .number-input {
 	font-size: 1.25rem;
 	border: 1px solid var(--color-border);
@@ -102,12 +107,14 @@ input:focus {
 	min-width: 0;
 	width: 1.7rem;
 	text-align: left;
-	background-color: white;
-	color: #333;
 	padding-left: 0.65rem;
 	padding-right: 0.25rem;
 	border-radius: 0;
 	user-select: none;
+}
+.currency-symbol:not(.disabled) {
+	background-color: white;
+	color: #333;
 }
 
 .react-css-collapse-transition {
@@ -482,6 +489,11 @@ input:focus {
 	visibility: hidden;
 }
 
+.checkbox.small {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
 .checkbox:hover:not(.checked) svg {
 	visibility: visible;
 	fill: #bbb;
@@ -489,10 +501,11 @@ input:focus {
 
 .checkbox.checked,
 .checkbox:active {
-	/* border-color: var(--color-primary);
-	border-width: 2px; */
 	box-shadow: 0 0 0 2px var(--color-primary);
-	/* margin: 0; */
+}
+.checkbox.small.checked,
+.checkbox.small:active {
+	box-shadow: 0 0 0 1px var(--color-primary);
 }
 .checkbox.checked svg {
 	visibility: visible;

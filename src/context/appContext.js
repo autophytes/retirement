@@ -13,6 +13,7 @@ const AppContextProvider = (props) => {
 			pension: 30000,
 		},
 		spouse: {
+			isNoSpouse: false,
 			currentAge: 32,
 			retirementAge: 62,
 			annualSavings: 10000,
@@ -41,7 +42,7 @@ const AppContextProvider = (props) => {
 		retirementIncome: 100000,
 		inflationIncome: 0.02,
 		inflationExpenses: 0.03,
-		drawIncomeAfterBothRetired: false,
+		drawIncomeAfterBothRetired: true,
 	});
 	const [options, setOptions] = useState({
 		preRetirementReturn: {

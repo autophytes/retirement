@@ -167,10 +167,14 @@ const RetirementVariations = () => {
 				<h3>Retirement Age</h3>
 
 				{/* PRIMARY */}
-				<div className='variation-section-buttons'>
-					<span className='variation-section-button-subtitle'>Primary</span>
-				</div>
-				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
+				{!profile.spouse.isNoSpouse && (
+					<div className='variation-section-buttons'>
+						<span className='variation-section-button-subtitle'>Primary</span>
+					</div>
+				)}
+				<div
+					className='variation-section-buttons'
+					style={profile.spouse.isNoSpouse ? {} : { margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
@@ -218,56 +222,62 @@ const RetirementVariations = () => {
 					</button>
 				</div>
 				{/* SPOUSE */}
-				<div className='variation-section-buttons'>
-					<span className='variation-section-button-subtitle'>Spouse</span>
-				</div>
-				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseRetirementAge === options.retirementAgeSpouse.one
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseRetirementAge: options.retirementAgeSpouse.one,
-							}))
-						}>
-						{options.retirementAgeSpouse.one}
-					</button>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseRetirementAge === options.retirementAgeSpouse.two
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseRetirementAge: options.retirementAgeSpouse.two,
-							}))
-						}>
-						{options.retirementAgeSpouse.two}
-					</button>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseRetirementAge === options.retirementAgeSpouse.three
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseRetirementAge: options.retirementAgeSpouse.three,
-							}))
-						}>
-						{options.retirementAgeSpouse.three}
-					</button>
-				</div>
+				{!profile.spouse.isNoSpouse && (
+					<>
+						<div className='variation-section-buttons'>
+							<span className='variation-section-button-subtitle'>Spouse</span>
+						</div>
+						<div
+							className='variation-section-buttons'
+							style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseRetirementAge === options.retirementAgeSpouse.one
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseRetirementAge: options.retirementAgeSpouse.one,
+									}))
+								}>
+								{options.retirementAgeSpouse.one}
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseRetirementAge === options.retirementAgeSpouse.two
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseRetirementAge: options.retirementAgeSpouse.two,
+									}))
+								}>
+								{options.retirementAgeSpouse.two}
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseRetirementAge === options.retirementAgeSpouse.three
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseRetirementAge: options.retirementAgeSpouse.three,
+									}))
+								}>
+								{options.retirementAgeSpouse.three}
+							</button>
+						</div>
+					</>
+				)}
 			</div>
 
 			{/* ANNUAL SAVINGS */}
@@ -275,10 +285,14 @@ const RetirementVariations = () => {
 				<h3>Savings</h3>
 
 				{/* PRIMARY */}
-				<div className='variation-section-buttons'>
-					<span className='variation-section-button-subtitle'>Primary</span>
-				</div>
-				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
+				{!profile.spouse.isNoSpouse && (
+					<div className='variation-section-buttons'>
+						<span className='variation-section-button-subtitle'>Primary</span>
+					</div>
+				)}
+				<div
+					className='variation-section-buttons'
+					style={profile.spouse.isNoSpouse ? {} : { margin: '0.5rem 0 0.5rem 1rem' }}>
 					<button
 						className={
 							'variation-section-button' +
@@ -327,56 +341,63 @@ const RetirementVariations = () => {
 				</div>
 
 				{/* SPOUSE */}
-				<div className='variation-section-buttons'>
-					<span className='variation-section-button-subtitle'>Spouse</span>
-				</div>
-				<div className='variation-section-buttons' style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseSavings === buttonOptions.savings.spouse.oneValue
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseSavings: buttonOptions.savings.spouse.oneValue,
-							}))
-						}>
-						{buttonOptions.savings.spouse.oneString}
-					</button>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseSavings === buttonOptions.savings.spouse.twoValue
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseSavings: buttonOptions.savings.spouse.twoValue,
-							}))
-						}>
-						{buttonOptions.savings.spouse.twoString}
-					</button>
-					<button
-						className={
-							'variation-section-button' +
-							(selected.spouseSavings === buttonOptions.savings.spouse.threeValue
-								? ' active'
-								: '')
-						}
-						onClick={() =>
-							setSelected((prev) => ({
-								...prev,
-								spouseSavings: buttonOptions.savings.spouse.threeValue,
-							}))
-						}>
-						{buttonOptions.savings.spouse.threeString}
-					</button>
-				</div>
+				{!profile.spouse.isNoSpouse && (
+					<>
+						<div className='variation-section-buttons'>
+							<span className='variation-section-button-subtitle'>Spouse</span>
+						</div>
+
+						<div
+							className='variation-section-buttons'
+							style={{ margin: '0.5rem 0 0.5rem 1rem' }}>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseSavings === buttonOptions.savings.spouse.oneValue
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseSavings: buttonOptions.savings.spouse.oneValue,
+									}))
+								}>
+								{buttonOptions.savings.spouse.oneString}
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseSavings === buttonOptions.savings.spouse.twoValue
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseSavings: buttonOptions.savings.spouse.twoValue,
+									}))
+								}>
+								{buttonOptions.savings.spouse.twoString}
+							</button>
+							<button
+								className={
+									'variation-section-button' +
+									(selected.spouseSavings === buttonOptions.savings.spouse.threeValue
+										? ' active'
+										: '')
+								}
+								onClick={() =>
+									setSelected((prev) => ({
+										...prev,
+										spouseSavings: buttonOptions.savings.spouse.threeValue,
+									}))
+								}>
+								{buttonOptions.savings.spouse.threeString}
+							</button>
+						</div>
+					</>
+				)}
 			</div>
 		</>
 	);

@@ -4,6 +4,8 @@ import { AppContext } from './../../context/appContext';
 import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
 import RetirementVariations from './RetirementVariations';
+import { generateResults } from './retirementFunctions';
+import gaussian from 'gaussian';
 
 const Retirement = ({ clientName }) => {
 	const { profile, selected, options, updateProfile } = useContext(AppContext);
@@ -13,150 +15,28 @@ const Retirement = ({ clientName }) => {
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 
 	// Compute the updated projection results
-	const results = useMemo(() => {
-		const {
-			primary,
-			spouse,
-			startingInvestments,
-			inflationIncome,
-			inflationExpenses,
-			drawIncomeAfterBothRetired,
-			futureSavings,
-			futureIncomes,
-		} = profile;
-		const {
-			retirementIncome,
-			preRetirementReturn,
-			postRetirementReturn,
-			primaryRetirementAge,
-			spouseRetirementAge,
-			primarySavings,
-			spouseSavings,
-		} = selected;
+	const results = useMemo(() => generateResults(profile, selected), [profile, selected]);
 
-		const endingAge = 100;
+	// TODO
+	// useEffect(() => {
+	// 	console.time('calculating 10000x results');
+	// 	const { preRetirementReturn, postRetirementReturn } = selected;
 
-		let newResults = [
-			{
-				primary: {
-					age: primary.currentAge,
-					annualSavings: primarySavings,
-					currentIncome: primary.currentIncome,
-					pension: primary.pension,
-				},
-				spouse: {
-					age: spouse.currentAge,
-					annualSavings: spouseSavings,
-					currentIncome: spouse.currentIncome,
-					pension: spouse.pension,
-				},
-				value: startingInvestments,
-				incomeNeeded: retirementIncome,
-				futureSavings: futureSavings.filter(
-					(item) => item.value && item.yearStart && item.numYears
-				),
-				futureIncomes: futureIncomes.filter(
-					(item) => item.value && item.yearStart && item.numYears
-				),
-			},
-		];
+	// 	const preDistributionObj = gaussian(preRetirementReturn, 0.12 ** 2);
+	// 	// const postDistribtionObj = gaussian(postRetirementReturn, 0.12 ** 2);
 
-		const yearsToRun = endingAge - Math.min(primary.currentAge, spouse.currentAge);
+	//   // Taking 250-300ms
+	// 	const newArray = Array.from({ length: 71 }, () =>
+	// 		Array.from({ length: 10000 }, () => preDistributionObj.ppf(Math.random()))
+	// 	);
 
-		for (let year = 1; year <= yearsToRun; year++) {
-			const prior = newResults[newResults.length - 1];
+	//   // This is taking 450-550ms
+	// 	// for (let i = 0; i < 10000; i++) {
+	// 	// 	generateResults(profile, selected, true, preDistributionObj, postDistribtionObj);
+	// 	// }
 
-			let currentYear = {
-				primary: {
-					age: primary.currentAge + year,
-					annualSavings: prior.primary.annualSavings * (1 + inflationIncome),
-					currentIncome: prior.primary.currentIncome * (1 + inflationIncome),
-					pension: prior.primary.pension * (1 + inflationIncome),
-				},
-				spouse: {
-					age: spouse.currentAge + year,
-					annualSavings: prior.spouse.annualSavings * (1 + inflationIncome),
-					currentIncome: prior.spouse.currentIncome * (1 + inflationIncome),
-					pension: prior.spouse.pension * (1 + inflationIncome),
-				},
-				incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
-				futureIncomes: prior.futureIncomes.map((item) => ({
-					...item,
-					value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
-				})),
-				futureSavings: prior.futureSavings.map((item) => ({
-					...item,
-					value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
-				})),
-			};
-
-			const hasPrimaryRetired = primaryRetirementAge < currentYear.primary.age;
-			const hasSpouseRetired = spouseRetirementAge < currentYear.spouse.age;
-			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
-
-			// Add any additional savings
-			const additionalIncome = futureIncomes.reduce((acc, item) => {
-				if (year >= item.yearStart && year < item.yearStart + item.numYears) {
-					return acc + item.value;
-				}
-				return acc;
-			}, 0);
-			console.log('additionalIncome:', additionalIncome);
-			const incomeNeeded = prior.incomeNeeded - additionalIncome;
-
-			if (peopleRetired === 0) {
-				// NEITHER HAVE RETIRED
-				currentYear.value =
-					prior.value * (1 + preRetirementReturn) + // Grow the savings
-					prior.primary.annualSavings + // Add the primary's contributions
-					prior.spouse.annualSavings; // Add the spouse's contributions
-			} else if (
-				// ONE HAS RETIRED
-				peopleRetired === 1
-			) {
-				// Pull the person object for the active worker
-				const nonRetiredPerson = hasPrimaryRetired ? prior.spouse : prior.primary;
-				const retiredPerson = hasPrimaryRetired ? prior.primary : prior.spouse;
-
-				// Calculate whether the worker is making more or less than the income they needf
-				const spouseIncomeDifference = nonRetiredPerson.currentIncome - incomeNeeded;
-
-				// If they make more, calculate the contribution
-				// If drawing income, then calculate if they can still contribute
-				const contribution = drawIncomeAfterBothRetired
-					? nonRetiredPerson.annualSavings
-					: Math.min(Math.max(spouseIncomeDifference, 0), nonRetiredPerson.annualSavings);
-
-				// If they make less, calculate the withdrawal
-				const withdrawal = drawIncomeAfterBothRetired
-					? 0
-					: Math.min(spouseIncomeDifference + retiredPerson.pension, 0);
-
-				currentYear.value =
-					(prior.value + withdrawal) * (1 + preRetirementReturn) + contribution;
-			} else {
-				// TWO HAVE RETIRED
-				currentYear.value =
-					prior.value * (1 + postRetirementReturn) -
-					Math.max(incomeNeeded - (prior.primary.pension + prior.spouse.pension), 0);
-			}
-
-			// Add any additional savings
-			const additionalSavings = futureSavings.reduce((acc, item) => {
-				if (year >= item.yearStart && year < item.yearStart + item.numYears) {
-					return acc + item.value;
-				}
-				return acc;
-			}, 0);
-			currentYear.value += additionalSavings;
-
-			// Store the result
-			newResults.push(currentYear);
-		}
-
-		// console.table(newResults);
-		return newResults;
-	}, [profile, selected]);
+	// 	console.timeEnd('calculating 10000x results');
+	// }, [profile, selected]);
 
 	// Extract values to display
 	useEffect(() => {
