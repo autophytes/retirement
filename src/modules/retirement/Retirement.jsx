@@ -5,7 +5,9 @@ import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
 import RetirementVariations from './RetirementVariations';
 import { generateResults } from './retirementFunctions';
-import gaussian from 'gaussian';
+
+import CalcWorker from '../../webWorkers/CalculateResults.worker';
+const worker = new CalcWorker();
 
 const Retirement = ({ clientName }) => {
 	const { profile, selected, options, updateProfile } = useContext(AppContext);
@@ -31,12 +33,36 @@ const Retirement = ({ clientName }) => {
 	// 	);
 
 	//   // This is taking 450-550ms
-	// 	// for (let i = 0; i < 10000; i++) {
-	// 	// 	generateResults(profile, selected, true, preDistributionObj, postDistribtionObj);
-	// 	// }
+	// 	for (let i = 0; i < 10000; i++) {
+	// 		generateResults(profile, selected, true, preDistributionObj, postDistribtionObj);
+	// 	}
 
 	// 	console.timeEnd('calculating 10000x results');
 	// }, [profile, selected]);
+
+	useEffect(() => {
+		console.log('running test function');
+		// TODO - aggregate results (find stdev and mean, show 1 stdev on each side). Do in worker.
+		// Store results for each profile/selected configuration
+		// Render results
+
+		const testFunction = async () => {
+			worker.onmessage = (e) => {
+				// console.log('e.data external: ', e.data);
+				if (e.data.results) {
+					// console.log('e.data.results: ', e.data.results);
+					console.log('results received!');
+				}
+
+				console.timeEnd('start to finish worker');
+			};
+
+			console.time('start to finish worker');
+			worker.postMessage({ selected, profile });
+		};
+
+		testFunction();
+	}, [selected, profile]);
 
 	// Extract values to display
 	useEffect(() => {

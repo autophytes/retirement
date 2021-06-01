@@ -11,9 +11,9 @@ import gaussian from 'gaussian';
 export const generateResults = (
 	profile,
 	selected,
-	useNormalDistribution = false,
-	preDistributionObj,
-	postDistributionObj
+	isSimulatedResults = false,
+	preDistributionObjDefault = null,
+	postDistributionObjDefault = null
 ) => {
 	const {
 		primary,
@@ -73,6 +73,11 @@ export const generateResults = (
 		endingAge -
 		(spouse.isNoSpouse ? primary.currentAge : Math.min(primary.currentAge, spouse.currentAge));
 
+	const preDistributionObj =
+		preDistributionObjDefault ?? gaussian(preRetirementReturn, 0.12 ** 2);
+	const postDistributionObj =
+		postDistributionObjDefault ?? gaussian(postRetirementReturn, 0.12 ** 2);
+
 	for (let year = 1; year <= yearsToRun; year++) {
 		const prior = newResults[newResults.length - 1];
 
@@ -109,7 +114,7 @@ export const generateResults = (
 
 		// Determine the year's investment return
 		let investmentReturn = peopleRetired > 1 ? postRetirementReturn : preRetirementReturn;
-		if (useNormalDistribution) {
+		if (isSimulatedResults) {
 			const distribution = peopleRetired > 1 ? postDistributionObj : preDistributionObj;
 			// const distribution = gaussian(investmentReturn, 0.12 ** 2); // EVENTUALLY PULL STDEV
 			investmentReturn = distribution.ppf(Math.random());
@@ -174,5 +179,6 @@ export const generateResults = (
 	}
 
 	// console.table(newResults);
-	return newResults;
+	return isSimulatedResults ? newResults.map((item) => item.value) : newResults;
+	// return newResults;
 };
