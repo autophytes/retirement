@@ -74,9 +74,45 @@ export const generateResults = (
 		(spouse.isNoSpouse ? primary.currentAge : Math.min(primary.currentAge, spouse.currentAge));
 
 	const preDistributionObj =
-		preDistributionObjDefault ?? gaussian(preRetirementReturn, 0.12 ** 2);
+		preDistributionObjDefault ?? gaussian(preRetirementReturn, 0.15 ** 2);
 	const postDistributionObj =
-		postDistributionObjDefault ?? gaussian(postRetirementReturn, 0.12 ** 2);
+		postDistributionObjDefault ?? gaussian(postRetirementReturn, 0.15 ** 2);
+
+	let returnsArray = [];
+
+	// Calculate investment returns, adjust to reflect mean
+	if (isSimulatedResults) {
+		let preReturnsArray = [];
+		let postReturnsArray = [];
+
+		for (let year = 1; year <= yearsToRun; year++) {
+			const hasPrimaryRetired = primaryRetirementAge < primary.currentAge + year;
+			const hasSpouseRetired = spouse.isNoSpouse
+				? hasPrimaryRetired // If no spouse, mimic what primary is doing
+				: spouseRetirementAge < spouse.currentAge + year;
+
+			const peopleRetired = (hasPrimaryRetired ? 1 : 0) + (hasSpouseRetired ? 1 : 0);
+
+			// Determine the year's investment return
+			if (peopleRetired > 1) {
+				postReturnsArray.push(postDistributionObj.ppf(Math.random()));
+			} else {
+				preReturnsArray.push(preDistributionObj.ppf(Math.random()));
+			}
+		}
+
+		const preReturnTotal = preReturnsArray.reduce((sum, value) => (1 + value) * sum, 1);
+		const preReturnIRR = preReturnTotal ** (1 / preReturnsArray.length) - 1;
+		const preAdjustment = preRetirementReturn - preReturnIRR;
+		preReturnsArray = preReturnsArray.map((item) => item + preAdjustment);
+
+		const postReturnTotal = postReturnsArray.reduce((sum, value) => (1 + value) * sum, 1);
+		const postReturnIRR = postReturnTotal ** (1 / postReturnsArray.length) - 1;
+		const postAdjustment = postRetirementReturn - postReturnIRR;
+		postReturnsArray = postReturnsArray.map((item) => item + postAdjustment);
+
+		returnsArray = [...preReturnsArray, ...postReturnsArray];
+	}
 
 	for (let year = 1; year <= yearsToRun; year++) {
 		const prior = newResults[newResults.length - 1];
@@ -115,9 +151,11 @@ export const generateResults = (
 		// Determine the year's investment return
 		let investmentReturn = peopleRetired > 1 ? postRetirementReturn : preRetirementReturn;
 		if (isSimulatedResults) {
-			const distribution = peopleRetired > 1 ? postDistributionObj : preDistributionObj;
+			// const distribution = peopleRetired > 1 ? postDistributionObj : preDistributionObj;
 			// const distribution = gaussian(investmentReturn, 0.12 ** 2); // EVENTUALLY PULL STDEV
-			investmentReturn = distribution.ppf(Math.random());
+			// investmentReturn = distribution.ppf(Math.random());
+
+			investmentReturn = returnsArray[year - 1];
 		}
 
 		// Add any additional savings

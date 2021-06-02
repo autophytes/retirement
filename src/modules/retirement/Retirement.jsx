@@ -15,6 +15,7 @@ const Retirement = ({ clientName }) => {
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
+	const [bands, setBands] = useState([]);
 
 	// Compute the updated projection results
 	const results = useMemo(() => generateResults(profile, selected), [profile, selected]);
@@ -41,27 +42,27 @@ const Retirement = ({ clientName }) => {
 	// }, [profile, selected]);
 
 	useEffect(() => {
-		console.log('running test function');
+		worker.onmessage = (e) => {
+			// console.log('e.data external: ', e.data);
+			if (e.data.results) {
+				setBands(e.data.results);
+
+				// console.log('e.data.results: ', e.data.results);
+				console.log('results received!');
+			}
+
+			console.timeEnd('start to finish worker');
+		};
+	}, []);
+
+	useEffect(() => {
 		// TODO - aggregate results (find stdev and mean, show 1 stdev on each side). Do in worker.
+		// Try to figure out why the worker is so much slower in production (4sx slower)
 		// Store results for each profile/selected configuration
 		// Render results
 
-		const testFunction = async () => {
-			worker.onmessage = (e) => {
-				// console.log('e.data external: ', e.data);
-				if (e.data.results) {
-					// console.log('e.data.results: ', e.data.results);
-					console.log('results received!');
-				}
-
-				console.timeEnd('start to finish worker');
-			};
-
-			console.time('start to finish worker');
-			worker.postMessage({ selected, profile });
-		};
-
-		testFunction();
+		setBands([]);
+		worker.postMessage({ selected, profile });
 	}, [selected, profile]);
 
 	// Extract values to display
@@ -135,7 +136,7 @@ const Retirement = ({ clientName }) => {
 
 				{/* Big boy graph */}
 				<div className='dashboard-section' style={{ flexGrow: '1', overflow: 'hidden' }}>
-					<RetirementChart results={results} />
+					<RetirementChart results={results} bands={bands} />
 
 					{/* Detailed results */}
 					<div className='additional-details-section'>

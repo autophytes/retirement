@@ -38,13 +38,55 @@ onmessage = (e) => {
 			);
 		}
 
+		let averageArray = [];
+		let stdevArray = [];
+
+		let bandsArray = [];
+
+		// Loop through the values for each year
+		for (let year = 0; year < results[0].length; year++) {
+			const yearSum = results.reduce((sum, yearResult) => sum + yearResult[year], 0);
+			const average = yearSum / results.length;
+			// averageArray.push(average);
+
+			const stdevCalcSum = results.reduce(
+				(sum, yearResult) => (yearResult[year] - average) ** 2 + sum,
+				0
+			);
+
+			const stdev = Math.sqrt(stdevCalcSum / results.length);
+			bandsArray.push([average + stdev, average - stdev]);
+
+			// stdevArray.push(stdev);
+
+			// if (year === 70) {
+			// 	results.forEach((item, i) => {
+			// 		if (i % 100 === 0) {
+			// 			console.log(item[70] / 1000000);
+			// 		}
+			// 	});
+			// }
+
+			// for (let simIndex = 0; simIndex < results.length; simIndex++) {
+
+			// }
+		}
+
+		console.log('bandsArray:', bandsArray);
+
+		// [
+		//   [100, 102, 99, 110...],
+		//   [100, 99, 105, 111...],
+		//   ...
+		// ]
+
 		// NOTE - taking forever to actually return the results. Need to just return aggregated results.
 		// TODO Not bad if just arrays of values. Maybe analyze results here, also pass array of values?
 
 		console.timeEnd('calculating 10000x results');
 
 		// Do the work in here, and postMessage the data you want to send back
-		postMessage({ results });
+		postMessage({ results: bandsArray });
 	} else {
 		postMessage('No data');
 	}

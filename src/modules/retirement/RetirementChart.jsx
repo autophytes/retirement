@@ -58,7 +58,7 @@ const OPTIONS = {
 
 // For initialization of the ChartJS object
 
-const RetirementChart = ({ results }) => {
+const RetirementChart = ({ results, bands }) => {
 	// REF
 	const chartCanvasRef = useRef(null);
 	const chartRef = useRef(null);
@@ -74,14 +74,27 @@ const RetirementChart = ({ results }) => {
 
 			chartRef.current.data.labels = labels;
 			chartRef.current.data.datasets[0].data = data;
+
+			// Std dev bands
+			if (bands.length) {
+				const upperBand = bands.map((item) => item[0]);
+				const lowerBand = bands.map((item) => item[1]);
+
+				chartRef.current.data.datasets[1].data = upperBand;
+				chartRef.current.data.datasets[2].data = lowerBand;
+			} else {
+				chartRef.current.data.datasets[1].data = [];
+				chartRef.current.data.datasets[2].data = [];
+			}
+
 			chartRef.current.update();
 		}
-	}, [results]);
+	}, [results, bands]);
 
 	// Initial config build
 	const config = useMemo(() => {
 		const newLabels = results.map((item) => item.primary.age);
-		const newData = results.map((item) => item.value);
+		const straightLineData = results.map((item) => item.value);
 
 		return {
 			type: 'line',
@@ -90,11 +103,21 @@ const RetirementChart = ({ results }) => {
 				labels: newLabels,
 				datasets: [
 					{
-						label: 'Dataset',
-						data: newData,
+						label: 'Value',
+						data: straightLineData,
 						borderColor: 'rgba(255, 99, 132)',
 						backgroundColor: 'rgba(255, 99, 132, 0.2)',
 						fill: 'start',
+					},
+					{
+						label: 'Value',
+						data: [],
+						borderColor: 'rgba(255, 99, 132)',
+					},
+					{
+						label: 'Value',
+						data: [],
+						borderColor: 'rgba(255, 99, 132)',
 					},
 				],
 			},
