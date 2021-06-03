@@ -73,18 +73,18 @@ const RetirementChart = ({ results, bands }) => {
 			const data = results.map((item) => item.value);
 
 			chartRef.current.data.labels = labels;
-			chartRef.current.data.datasets[0].data = data;
+			chartRef.current.data.datasets[2].data = data;
 
 			// Std dev bands
 			if (bands.length) {
 				const upperBand = bands.map((item) => item[0]);
 				const lowerBand = bands.map((item) => item[1]);
 
-				chartRef.current.data.datasets[1].data = upperBand;
-				chartRef.current.data.datasets[2].data = lowerBand;
+				chartRef.current.data.datasets[0].data = upperBand;
+				chartRef.current.data.datasets[1].data = lowerBand;
 			} else {
+				chartRef.current.data.datasets[0].data = [];
 				chartRef.current.data.datasets[1].data = [];
-				chartRef.current.data.datasets[2].data = [];
 			}
 
 			chartRef.current.update();
@@ -104,20 +104,20 @@ const RetirementChart = ({ results, bands }) => {
 				datasets: [
 					{
 						label: 'Value',
+						data: [],
+						borderColor: 'rgba(	255, 116, 115)',
+					},
+					{
+						label: 'Value',
+						data: [],
+						borderColor: 'rgba(	71, 184, 224)',
+					},
+					{
+						label: 'Value',
 						data: straightLineData,
-						borderColor: 'rgba(255, 99, 132)',
-						backgroundColor: 'rgba(255, 99, 132, 0.2)',
+						borderColor: 'rgba(74, 201, 117)',
+						backgroundColor: 'rgba(74, 201, 117, 0.1)',
 						fill: 'start',
-					},
-					{
-						label: 'Value',
-						data: [],
-						borderColor: 'rgba(255, 99, 132)',
-					},
-					{
-						label: 'Value',
-						data: [],
-						borderColor: 'rgba(255, 99, 132)',
 					},
 				],
 			},
