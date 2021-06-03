@@ -10,7 +10,8 @@ import CalcWorker from '../../webWorkers/CalculateResults.worker';
 const worker = new CalcWorker();
 
 const Retirement = ({ clientName }) => {
-	const { profile, selected, options, updateProfile } = useContext(AppContext);
+	const { profile, selected, options, updateProfile, monteCarloCacheRef } =
+		useContext(AppContext);
 
 	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
@@ -41,19 +42,9 @@ const Retirement = ({ clientName }) => {
 	// 	console.timeEnd('calculating 10000x results');
 	// }, [profile, selected]);
 
-	useEffect(() => {
-		worker.onmessage = (e) => {
-			// console.log('e.data external: ', e.data);
-			if (e.data.results) {
-				setBands(e.data.results);
+	// useEffect(() => {
 
-				// console.log('e.data.results: ', e.data.results);
-				console.log('results received!');
-			}
-
-			console.timeEnd('start to finish worker');
-		};
-	}, []);
+	// }, []);
 
 	useEffect(() => {
 		// TODO - aggregate results (find stdev and mean, show 1 stdev on each side). Do in worker.
@@ -61,8 +52,29 @@ const Retirement = ({ clientName }) => {
 		// Store results for each profile/selected configuration
 		// Render results
 
-		setBands([]);
-		worker.postMessage({ selected, profile });
+		const cacheKey = JSON.stringify(selected) + JSON.stringify(profile);
+
+		if (monteCarloCacheRef.current[cacheKey]) {
+			setBands(monteCarloCacheRef.current[cacheKey]);
+		} else {
+			setBands([]);
+			worker.postMessage({ selected, profile });
+
+			// Register the worker handler function
+			worker.onmessage = (e) => {
+				// If we get data back from the worker
+				if (e.data.results) {
+					// Update the bands to render
+					setBands(e.data.results);
+
+					// Cache the results
+					monteCarloCacheRef.current[cacheKey] = e.data.results;
+					console.log('results received!');
+				}
+
+				console.timeEnd('start to finish worker');
+			};
+		}
 	}, [selected, profile]);
 
 	// Extract values to display

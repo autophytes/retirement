@@ -54,8 +54,14 @@ onmessage = (e) => {
 				0
 			);
 
+			const survivedCount = results.reduce(
+				(sum, yearResult) => (yearResult[year] > 0 ? sum + 1 : sum),
+				0
+			);
+			const percentSurvived = survivedCount / results.length;
+
 			const stdev = Math.sqrt(stdevCalcSum / results.length);
-			bandsArray.push([average + stdev, average - stdev]);
+			bandsArray.push([average + stdev, average - stdev, percentSurvived]);
 
 			// stdevArray.push(stdev);
 

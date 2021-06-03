@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, { createContext, useCallback, useState, useRef } from 'react';
 
 export const AppContext = createContext();
 
@@ -101,6 +101,7 @@ const AppContextProvider = (props) => {
 			spouse: {},
 		},
 	});
+	const monteCarloCacheRef = useRef({});
 
 	const updateProfile = useCallback((value, property, parentProperty = null) => {
 		setProfile((prev) => ({
@@ -140,6 +141,7 @@ const AppContextProvider = (props) => {
 				setSelected,
 				buttonOptions,
 				setButtonOptions,
+				monteCarloCacheRef,
 			}}>
 			{props.children}
 		</AppContext.Provider>

@@ -56,6 +56,8 @@ const OPTIONS = {
 	},
 };
 
+let width, height, gradient;
+
 // For initialization of the ChartJS object
 
 const RetirementChart = ({ results, bands }) => {
@@ -79,6 +81,8 @@ const RetirementChart = ({ results, bands }) => {
 			if (bands.length) {
 				const upperBand = bands.map((item) => item[0]);
 				const lowerBand = bands.map((item) => item[1]);
+				const probBand = bands.map((item) => item[2]);
+				console.log('probBand:', probBand);
 
 				chartRef.current.data.datasets[0].data = upperBand;
 				chartRef.current.data.datasets[1].data = lowerBand;
@@ -116,7 +120,18 @@ const RetirementChart = ({ results, bands }) => {
 						label: 'Value',
 						data: straightLineData,
 						borderColor: 'rgba(74, 201, 117)',
-						backgroundColor: 'rgba(74, 201, 117, 0.1)',
+						// Sets the background color to a gradient
+						backgroundColor: (context) => {
+							const { ctx, chartArea } = context.chart;
+
+							// Wait until after initial chart load
+							if (!chartArea) {
+								return null;
+							}
+
+							// Generates the gradient
+							return getGradient(ctx, chartArea);
+						},
 						fill: 'start',
 					},
 				],
@@ -148,3 +163,21 @@ const RetirementChart = ({ results, bands }) => {
 };
 
 export default RetirementChart;
+
+// Creates the gradient fill
+const getGradient = (ctx, chartArea) => {
+	const chartWidth = chartArea.right - chartArea.left;
+	const chartHeight = chartArea.bottom - chartArea.top;
+	if (gradient === null || width !== chartWidth || height !== chartHeight) {
+		// Create the gradient because this is either the first render
+		// or the size of the chart has changed
+		width = chartWidth;
+		height = chartHeight;
+		gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+		gradient.addColorStop(0, 'rgba(74, 201, 117, 0)');
+		gradient.addColorStop(0.3, 'rgba(74, 201, 117, 0.2)');
+		gradient.addColorStop(1, 'rgba(74, 201, 117, 0.2)');
+	}
+
+	return gradient;
+};
