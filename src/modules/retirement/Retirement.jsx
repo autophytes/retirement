@@ -18,62 +18,50 @@ const Retirement = ({ clientName }) => {
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 	const [bands, setBands] = useState([]);
 
+	// TODO - display survival probabilities
+	// TODO - only render bands if the cacheKey matches what the results were calculated for?
+
 	// Compute the updated projection results
 	const results = useMemo(() => generateResults(profile, selected), [profile, selected]);
 
-	// TODO
-	// useEffect(() => {
-	// 	console.time('calculating 10000x results');
-	// 	const { preRetirementReturn, postRetirementReturn } = selected;
-
-	// 	const preDistributionObj = gaussian(preRetirementReturn, 0.12 ** 2);
-	// 	// const postDistribtionObj = gaussian(postRetirementReturn, 0.12 ** 2);
-
-	//   // Taking 250-300ms
-	// 	const newArray = Array.from({ length: 71 }, () =>
-	// 		Array.from({ length: 10000 }, () => preDistributionObj.ppf(Math.random()))
-	// 	);
-
-	//   // This is taking 450-550ms
-	// 	for (let i = 0; i < 10000; i++) {
-	// 		generateResults(profile, selected, true, preDistributionObj, postDistribtionObj);
-	// 	}
-
-	// 	console.timeEnd('calculating 10000x results');
-	// }, [profile, selected]);
-
-	// useEffect(() => {
-
-	// }, []);
-
+	// Register monte carlo results handler
 	useEffect(() => {
-		// TODO - aggregate results (find stdev and mean, show 1 stdev on each side). Do in worker.
-		// Try to figure out why the worker is so much slower in production (4sx slower)
-		// Store results for each profile/selected configuration
-		// Render results
+		// Register the worker handler function
+		worker.onmessage = (e) => {
+			// If we get data back from the worker
+			if (e.data.results) {
+				// Update the bands to render
+				setBands(e.data.results);
 
+				// Cache the results using the provided key
+				if (e.data.cacheKey) {
+					monteCarloCacheRef.current[e.data.cacheKey] = e.data.results;
+				}
+
+				console.log('results received!');
+			}
+
+			console.timeEnd('start to finish worker');
+		};
+	}, []);
+
+	// Calculate Monte Carlo
+	useEffect(() => {
+		// TODO - Try to figure out why the worker is so much slower in production (4sx slower)
+		//   Tested, isn't browser version target. Maybe netlify?
+
+		// Use config settings as cache key
 		const cacheKey = JSON.stringify(selected) + JSON.stringify(profile);
 
+		// Use cached results if available
 		if (monteCarloCacheRef.current[cacheKey]) {
 			setBands(monteCarloCacheRef.current[cacheKey]);
 		} else {
+			// Reset the results
 			setBands([]);
-			worker.postMessage({ selected, profile });
 
-			// Register the worker handler function
-			worker.onmessage = (e) => {
-				// If we get data back from the worker
-				if (e.data.results) {
-					// Update the bands to render
-					setBands(e.data.results);
-
-					// Cache the results
-					monteCarloCacheRef.current[cacheKey] = e.data.results;
-					console.log('results received!');
-				}
-
-				console.timeEnd('start to finish worker');
-			};
+			// Request calculation of new monte carlo results from web worker
+			worker.postMessage({ selected, profile, cacheKey });
 		}
 	}, [selected, profile]);
 
