@@ -3,10 +3,12 @@ import { AppContext } from './../../context/appContext';
 
 import numeral from 'numeral';
 import RetirementChart from './RetirementChart';
+import ProbabilityChart from './ProbabilityChart';
 import RetirementVariations from './RetirementVariations';
 import { generateResults } from './retirementFunctions';
 
 import CalcWorker from '../../webWorkers/CalculateResults.worker';
+import { roundTo } from '../../utils/utils';
 const worker = new CalcWorker();
 
 const Retirement = ({ clientName }) => {
@@ -20,6 +22,10 @@ const Retirement = ({ clientName }) => {
 
 	// TODO - display survival probabilities
 	// TODO - only render bands if the cacheKey matches what the results were calculated for?
+	// Show an unlabled, narrow area chart. Track the mouse cursor / touch over the chart
+	// Have a popup above the chart that shows 87: 95% that follows your finger,
+	// adjusts the number as your finger moves
+	// Round bands to the nearest thousand?
 
 	// Compute the updated projection results
 	const results = useMemo(() => generateResults(profile, selected), [profile, selected]);
@@ -137,6 +143,7 @@ const Retirement = ({ clientName }) => {
 				{/* Big boy graph */}
 				<div className='dashboard-section' style={{ flexGrow: '1', overflow: 'hidden' }}>
 					<RetirementChart results={results} bands={bands} />
+					<ProbabilityChart results={results} bands={bands} />
 
 					{/* Detailed results */}
 					<div className='additional-details-section'>
@@ -171,10 +178,6 @@ const Retirement = ({ clientName }) => {
 };
 
 export default Retirement;
-
-const roundTo = (numberToRound, precision) => {
-	return Number(Math.round(numberToRound + `e${precision}`) + `e${-precision}`);
-};
 
 // FEATURE NUMBERS
 // Savings at retirement

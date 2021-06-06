@@ -9,6 +9,7 @@ import { formatNumber } from '../../utils/utils';
 
 const OPTIONS = {
 	responsive: true,
+	aspectRatio: 10,
 	plugins: {
 		filler: {
 			propagate: false,
@@ -34,19 +35,17 @@ const OPTIONS = {
 			bodyFont: {
 				size: 16,
 			},
-			bodyAlign: 'center',
 			bodyColor: 'rgba(0, 0, 0, 1)', // Value: 234,234.23
+			bodyAlign: 'center',
 			displayColors: false, //
 			callbacks: {
 				title: (tooltipArray) => 'Age ' + tooltipArray[0].label,
 				label: (context) => {
-					return (
-						'$' +
-						formatNumber({
-							value: context.raw,
-							decimalPlaces: -5,
-						})
-					);
+					return formatNumber({
+						value: context.raw,
+						decimalPlaces: 1,
+						isPercent: true,
+					});
 				},
 			},
 		},
@@ -66,22 +65,26 @@ const OPTIONS = {
 				font: {
 					size: 18,
 				},
-				callback: (value, index, values) => {
-					// return '$' + value;
-					return new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-						maximumFractionDigits: 0,
-						minimumFractionDigits: 0,
-					}).format(value);
-				},
+				// callback: (value, index, values) => {
+				// 	// return '$' + value;
+				// 	return new Intl.NumberFormat('en-US', {
+				// 		style: 'currency',
+				// 		currency: 'USD',
+				// 		maximumFractionDigits: 0,
+				// 		minimumFractionDigits: 0,
+				// 	}).format(value);
+				// },
+				display: false,
 			},
+			display: false,
 		},
 		x: {
 			ticks: {
 				font: {
 					size: 18,
 				},
+				color: '#FFFFFF',
+				// display: false,
 			},
 		},
 	},
@@ -103,23 +106,19 @@ const RetirementChart = ({ results, bands }) => {
 			console.log('rerunning chartRef.current update');
 
 			const labels = results.map((item) => item.primary.age);
-			const data = results.map((item) => item.value);
+			// const data = results.map((item) => item.value);
 
 			chartRef.current.data.labels = labels;
-			chartRef.current.data.datasets[2].data = data;
+			chartRef.current.data.datasets[0].data = [];
 
 			// Std dev bands
 			if (bands.length) {
-				const upperBand = bands.map((item) => item[0]);
-				const lowerBand = bands.map((item) => item[1]);
 				const probBand = bands.map((item) => item[2]);
 				console.log('probBand:', probBand);
 
-				chartRef.current.data.datasets[0].data = upperBand;
-				chartRef.current.data.datasets[1].data = lowerBand;
+				chartRef.current.data.datasets[0].data = probBand;
 			} else {
 				chartRef.current.data.datasets[0].data = [];
-				chartRef.current.data.datasets[1].data = [];
 			}
 
 			chartRef.current.update();
@@ -129,7 +128,7 @@ const RetirementChart = ({ results, bands }) => {
 	// Initial config build
 	const config = useMemo(() => {
 		const newLabels = results.map((item) => item.primary.age);
-		const straightLineData = results.map((item) => item.value);
+		// const straightLineData = results.map((item) => item.value);
 
 		return {
 			type: 'line',
@@ -140,21 +139,10 @@ const RetirementChart = ({ results, bands }) => {
 					{
 						// label: 'Value',
 						data: [],
-						borderColor: 'rgba(	255, 116, 115)',
-					},
-					{
-						// label: 'Value',
-						data: [],
-						borderColor: 'rgba(	71, 184, 224)',
-					},
-					{
-						// label: 'Value',
-						data: straightLineData,
 						borderColor: 'rgba(74, 201, 117)',
 						// Sets the background color to a gradient
 						backgroundColor: (context) => {
 							const { ctx, chartArea } = context.chart;
-							console.log('chartArea:', chartArea);
 
 							// Wait until after initial chart load
 							if (!chartArea) {
