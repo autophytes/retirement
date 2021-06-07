@@ -19,6 +19,7 @@ const Retirement = ({ clientName }) => {
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 	const [bands, setBands] = useState([]);
+	const [chartLeft, setChartLeft] = useState(0);
 
 	// TODO - display survival probabilities
 	// TODO - only render bands if the cacheKey matches what the results were calculated for?
@@ -28,7 +29,10 @@ const Retirement = ({ clientName }) => {
 	// Round bands to the nearest thousand?
 
 	// Compute the updated projection results
-	const results = useMemo(() => generateResults(profile, selected), [profile, selected]);
+	const results = useMemo(() => {
+		const newResults = generateResults(profile, selected);
+		return newResults.results;
+	}, [profile, selected]);
 
 	// Register monte carlo results handler
 	useEffect(() => {
@@ -142,8 +146,8 @@ const Retirement = ({ clientName }) => {
 
 				{/* Big boy graph */}
 				<div className='dashboard-section' style={{ flexGrow: '1', overflow: 'hidden' }}>
-					<RetirementChart results={results} bands={bands} />
-					<ProbabilityChart results={results} bands={bands} />
+					<RetirementChart results={results} bands={bands} setChartLeft={setChartLeft} />
+					<ProbabilityChart results={results} bands={bands} chartLeft={chartLeft} />
 
 					{/* Detailed results */}
 					<div className='additional-details-section'>

@@ -20,16 +20,18 @@ onmessage = (e) => {
 
 		// Generate the 10,000 scenarios
 		let results = [];
+		let returns = [];
 		for (let i = 0; i < 10000; i++) {
-			results.push(
-				generateResults(
-					e.data.profile,
-					e.data.selected,
-					true, // isSimulationResults
-					preDistributionObj,
-					postDistribtionObj
-				)
+			const newResults = generateResults(
+				e.data.profile,
+				e.data.selected,
+				true, // isSimulationResults
+				preDistributionObj,
+				postDistribtionObj
 			);
+
+			results.push(newResults.results);
+			returns.push(newResults.returns);
 		}
 
 		let bandsArray = [];
@@ -39,25 +41,40 @@ onmessage = (e) => {
 			const yearSum = results.reduce((sum, yearResult) => sum + yearResult[year], 0);
 			const average = yearSum / results.length;
 
+			// Standard Deviation
 			const stdevCalcSum = results.reduce(
 				(sum, yearResult) => (yearResult[year] - average) ** 2 + sum,
 				0
 			);
+			const stdev = Math.sqrt(stdevCalcSum / results.length);
 
+			// Survival Percentage
 			const survivedCount = results.reduce(
 				(sum, yearResult) => (yearResult[year] > 0 ? sum + 1 : sum),
 				0
 			);
 			const percentSurvived = survivedCount / results.length;
 
-			const stdev = Math.sqrt(stdevCalcSum / results.length);
 			bandsArray.push([average + stdev, average - stdev, percentSurvived]);
 		}
+
+		// Calculate the average number of negative years
+		const totalNegativeYears = returns.reduce(
+			(acc, yearArray) =>
+				yearArray.reduce((count, item) => (item < 0 ? count + 1 : count), 0) + acc,
+			0
+		);
+		const avgNegativeYears = totalNegativeYears / returns.length;
+		console.log('avgNegativeYears:', avgNegativeYears);
 
 		console.timeEnd('calculating 10000x results');
 
 		// Do the work in here, and postMessage the data you want to send back
-		postMessage({ results: bandsArray, cacheKey: e.data.cacheKey });
+		postMessage({
+			results: bandsArray,
+			cacheKey: e.data.cacheKey,
+			avgNegativeYears: avgNegativeYears,
+		});
 	} else {
 		postMessage('No data');
 	}

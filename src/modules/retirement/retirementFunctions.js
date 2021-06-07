@@ -217,6 +217,9 @@ export const generateResults = (
 	}
 
 	// console.table(newResults);
-	return isSimulatedResults ? newResults.map((item) => item.value) : newResults;
+	return {
+		results: isSimulatedResults ? newResults.map((item) => item.value) : newResults,
+		returns: returnsArray,
+	};
 	// return newResults;
 };

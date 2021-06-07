@@ -91,7 +91,7 @@ let width, height, gradient;
 
 // For initialization of the ChartJS object
 
-const RetirementChart = ({ results, bands }) => {
+const RetirementChart = ({ results, bands, setChartLeft }) => {
 	// REF
 	const chartCanvasRef = useRef(null);
 	const chartRef = useRef(null);
@@ -154,12 +154,13 @@ const RetirementChart = ({ results, bands }) => {
 						// Sets the background color to a gradient
 						backgroundColor: (context) => {
 							const { ctx, chartArea } = context.chart;
-							console.log('chartArea:', chartArea);
 
 							// Wait until after initial chart load
 							if (!chartArea) {
 								return null;
 							}
+
+							setChartLeft(chartArea.left);
 
 							// Generates the gradient
 							return getGradient(ctx, chartArea);

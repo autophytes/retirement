@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import ChartJS from 'chart.js/auto';
 import { formatNumber } from '../../utils/utils';
@@ -9,7 +9,7 @@ import { formatNumber } from '../../utils/utils';
 
 const OPTIONS = {
 	responsive: true,
-	aspectRatio: 10,
+	aspectRatio: 12,
 	plugins: {
 		filler: {
 			propagate: false,
@@ -83,18 +83,21 @@ const OPTIONS = {
 				font: {
 					size: 18,
 				},
-				color: '#FFFFFF',
+				color: 'rgba(0, 0, 0, 0)', // Label color
 				// display: false,
 			},
 		},
 	},
 };
 
-let width, height, gradient;
+let width, height, gradientFill, gradientBorder;
 
 // For initialization of the ChartJS object
 
-const RetirementChart = ({ results, bands }) => {
+const ProbabilityChart = ({ results, bands, chartLeft }) => {
+	// STATE
+	const [localChartLeft, setLocalChartLeft] = useState(0);
+
 	// REF
 	const chartCanvasRef = useRef(null);
 	const chartRef = useRef(null);
@@ -114,7 +117,6 @@ const RetirementChart = ({ results, bands }) => {
 			// Std dev bands
 			if (bands.length) {
 				const probBand = bands.map((item) => item[2]);
-				console.log('probBand:', probBand);
 
 				chartRef.current.data.datasets[0].data = probBand;
 			} else {
@@ -139,18 +141,27 @@ const RetirementChart = ({ results, bands }) => {
 					{
 						// label: 'Value',
 						data: [],
-						borderColor: 'rgba(74, 201, 117)',
+						// borderColor: 'rgba(74, 201, 117)',
 						// Sets the background color to a gradient
 						backgroundColor: (context) => {
 							const { ctx, chartArea } = context.chart;
 
 							// Wait until after initial chart load
-							if (!chartArea) {
-								return null;
-							}
+							if (!chartArea) return null;
+
+							setLocalChartLeft((prev) => (!prev ? chartArea.left : prev));
 
 							// Generates the gradient
-							return getGradient(ctx, chartArea);
+							return getGradientFill(ctx, chartArea);
+						},
+						borderColor: (context) => {
+							const { ctx, chartArea } = context.chart;
+
+							// Wait until after initial chart load
+							if (!chartArea) return null;
+
+							// Generates the gradient
+							return getGradientBorder(ctx, chartArea);
 						},
 						fill: 'start',
 					},
@@ -171,33 +182,51 @@ const RetirementChart = ({ results, bands }) => {
 	}, [config]);
 
 	return (
-		<div
-			style={{
-				position: 'relative',
-				// width: 'calc(100% - 1.75rem)',
-				margin: '0 auto',
-			}}>
-			<canvas ref={chartCanvasRef}></canvas>
+		<div className='probability-chart-wrapper'>
+			<canvas
+				ref={chartCanvasRef}
+				style={{ paddingLeft: chartLeft - localChartLeft + 2 }}></canvas>
 		</div>
 	);
 };
 
-export default RetirementChart;
+export default ProbabilityChart;
 
 // Creates the gradient fill
-const getGradient = (ctx, chartArea) => {
+const getGradientFill = (ctx, chartArea) => {
 	const chartWidth = chartArea.right - chartArea.left;
 	const chartHeight = chartArea.bottom - chartArea.top;
-	if (gradient === null || width !== chartWidth || height !== chartHeight) {
+	if (gradientFill === undefined || width !== chartWidth || height !== chartHeight) {
 		// Create the gradient because this is either the first render
 		// or the size of the chart has changed
 		width = chartWidth;
 		height = chartHeight;
-		gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-		gradient.addColorStop(0, 'rgba(74, 201, 117, 0)');
-		gradient.addColorStop(0.3, 'rgba(74, 201, 117, 0.2)');
-		gradient.addColorStop(1, 'rgba(74, 201, 117, 0.2)');
+		gradientFill = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+		gradientFill.addColorStop(0, 'rgba(74, 201, 117, 0)');
+		gradientFill.addColorStop(0.3, 'rgba(74, 201, 117, 0.2)');
+		gradientFill.addColorStop(1, 'rgba(74, 201, 117, 0.2)');
 	}
 
-	return gradient;
+	return gradientFill;
 };
+
+// Creates the gradient fill
+const getGradientBorder = (ctx, chartArea) => {
+	const chartWidth = chartArea.right - chartArea.left;
+	const chartHeight = chartArea.bottom - chartArea.top;
+
+	if (gradientBorder === undefined || width !== chartWidth || height !== chartHeight) {
+		// Create the gradient because this is either the first render
+		// or the size of the chart has changed
+		width = chartWidth;
+		height = chartHeight;
+		gradientBorder = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+		gradientBorder.addColorStop(0, 'rgb(255, 116, 115)');
+		gradientBorder.addColorStop(0.3, 'rgb(255, 116, 115)');
+		gradientBorder.addColorStop(1, 'rgb(74, 201, 117)');
+	}
+
+	return gradientBorder;
+};
+
+// rgba(	255, 116, 115)

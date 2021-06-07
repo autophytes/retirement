@@ -511,3 +511,8 @@ input:disabled {
 	visibility: visible;
 	fill: var(--color-primary);
 }
+
+.probability-chart-wrapper {
+	position: relative;
+	margin: 0.75rem auto -2rem auto;
+}
