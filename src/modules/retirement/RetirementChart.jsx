@@ -1,91 +1,12 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
 import ChartJS from 'chart.js/auto';
-import { formatNumber } from '../../utils/utils';
+
+import { RETIREMENT_OPTIONS } from './chartOptions';
 
 // Some helpful utils for chart-js
 // https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js
 // https://www.chartjs.org/docs/master/samples/bar/vertical.html
-
-const OPTIONS = {
-	responsive: true,
-	plugins: {
-		filler: {
-			propagate: false,
-		},
-		title: {
-			display: false,
-			// text: (ctx) => 'Fill: ' + ctx.chart.data.datasets[0].fill,
-		},
-		legend: {
-			display: false,
-		},
-		tooltip: {
-			borderColor: 'rgba(0, 149, 255, 1)',
-			borderWidth: 2,
-			backgroundColor: 'rgba(255, 255, 255, 0.8)',
-			// yAlign: 'bottom',
-			titleAlign: 'center',
-			titleFont: {
-				size: 18,
-				weight: 'bold',
-			},
-			titleColor: 'rgba(0, 0, 0, 1)',
-			bodyFont: {
-				size: 16,
-			},
-			bodyAlign: 'center',
-			bodyColor: 'rgba(0, 0, 0, 1)', // Value: 234,234.23
-			displayColors: false, //
-			callbacks: {
-				title: (tooltipArray) => 'Age ' + tooltipArray[0].label,
-				label: (context) => {
-					return (
-						'$' +
-						formatNumber({
-							value: context.raw,
-							decimalPlaces: -5,
-						})
-					);
-				},
-			},
-		},
-	},
-	interaction: {
-		intersect: false,
-	},
-	elements: {
-		line: {
-			tension: 0.4,
-		},
-	},
-	scales: {
-		y: {
-			min: 0,
-			ticks: {
-				font: {
-					size: 18,
-				},
-				callback: (value, index, values) => {
-					// return '$' + value;
-					return new Intl.NumberFormat('en-US', {
-						style: 'currency',
-						currency: 'USD',
-						maximumFractionDigits: 0,
-						minimumFractionDigits: 0,
-					}).format(value);
-				},
-			},
-		},
-		x: {
-			ticks: {
-				font: {
-					size: 18,
-				},
-			},
-		},
-	},
-};
 
 let width, height, gradient;
 
@@ -113,7 +34,6 @@ const RetirementChart = ({ results, bands, setChartLeft }) => {
 				const upperBand = bands.map((item) => item[0]);
 				const lowerBand = bands.map((item) => item[1]);
 				const probBand = bands.map((item) => item[2]);
-				console.log('probBand:', probBand);
 
 				chartRef.current.data.datasets[0].data = upperBand;
 				chartRef.current.data.datasets[1].data = lowerBand;
@@ -133,7 +53,7 @@ const RetirementChart = ({ results, bands, setChartLeft }) => {
 
 		return {
 			type: 'line',
-			options: OPTIONS,
+			options: RETIREMENT_OPTIONS,
 			data: {
 				labels: newLabels,
 				datasets: [

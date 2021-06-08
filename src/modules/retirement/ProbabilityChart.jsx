@@ -1,94 +1,12 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import ChartJS from 'chart.js/auto';
-import { formatNumber } from '../../utils/utils';
+
+import { PROBABILITY_OPTIONS } from './chartOptions';
 
 // Some helpful utils for chart-js
 // https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js
 // https://www.chartjs.org/docs/master/samples/bar/vertical.html
-
-const OPTIONS = {
-	responsive: true,
-	aspectRatio: 12,
-	plugins: {
-		filler: {
-			propagate: false,
-		},
-		title: {
-			display: false,
-			// text: (ctx) => 'Fill: ' + ctx.chart.data.datasets[0].fill,
-		},
-		legend: {
-			display: false,
-		},
-		tooltip: {
-			borderColor: 'rgba(0, 149, 255, 1)',
-			borderWidth: 2,
-			backgroundColor: 'rgba(255, 255, 255, 0.8)',
-			// yAlign: 'bottom',
-			titleAlign: 'center',
-			titleFont: {
-				size: 18,
-				weight: 'bold',
-			},
-			titleColor: 'rgba(0, 0, 0, 1)',
-			bodyFont: {
-				size: 16,
-			},
-			bodyColor: 'rgba(0, 0, 0, 1)', // Value: 234,234.23
-			bodyAlign: 'center',
-			displayColors: false, //
-			callbacks: {
-				title: (tooltipArray) => 'Age ' + tooltipArray[0].label,
-				label: (context) => {
-					return formatNumber({
-						value: context.raw,
-						decimalPlaces: 1,
-						isPercent: true,
-					});
-				},
-			},
-		},
-	},
-	interaction: {
-		intersect: false,
-	},
-	elements: {
-		line: {
-			tension: 0.4,
-		},
-	},
-	scales: {
-		y: {
-			min: 0,
-			ticks: {
-				font: {
-					size: 18,
-				},
-				// callback: (value, index, values) => {
-				// 	// return '$' + value;
-				// 	return new Intl.NumberFormat('en-US', {
-				// 		style: 'currency',
-				// 		currency: 'USD',
-				// 		maximumFractionDigits: 0,
-				// 		minimumFractionDigits: 0,
-				// 	}).format(value);
-				// },
-				display: false,
-			},
-			display: false,
-		},
-		x: {
-			ticks: {
-				font: {
-					size: 18,
-				},
-				color: 'rgba(0, 0, 0, 0)', // Label color
-				// display: false,
-			},
-		},
-	},
-};
 
 let width, height, gradientFill, gradientBorder;
 
@@ -134,7 +52,7 @@ const ProbabilityChart = ({ results, bands, chartLeft }) => {
 
 		return {
 			type: 'line',
-			options: OPTIONS,
+			options: PROBABILITY_OPTIONS,
 			data: {
 				labels: newLabels,
 				datasets: [

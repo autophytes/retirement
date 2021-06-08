@@ -19,6 +19,7 @@ const Retirement = ({ clientName }) => {
 	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 	const [bands, setBands] = useState([]);
+	const [endingProb, setEndingProb] = useState('');
 	const [chartLeft, setChartLeft] = useState(0);
 
 	// TODO - display survival probabilities
@@ -55,6 +56,28 @@ const Retirement = ({ clientName }) => {
 		};
 	}, []);
 
+	// Pull probability at ending age
+	useEffect(() => {
+		// Temporarily hardcode "ending age"
+		const endingAge = 95;
+		const probArray = bands.map((item) => item[2]);
+
+		// Don't set until we have our probabilities
+		if (!probArray.length) return;
+
+		const probIndex = endingAge - profile.primary.currentAge;
+
+		const probabilty = probArray[probIndex]; // 0 - 1
+		console.log('probabilty:', probabilty);
+
+		const formattedProbability = numeral(probabilty).format('0.0%');
+
+		setEndingProb(formattedProbability);
+
+		// TODO - eventually pull "ending age" from profile ob
+		// TODO - need to stop the ending age blank flash
+	}, [bands, profile]);
+
 	// Calculate Monte Carlo
 	useEffect(() => {
 		// TODO - Try to figure out why the worker is so much slower in production (4sx slower)
@@ -69,6 +92,7 @@ const Retirement = ({ clientName }) => {
 		} else {
 			// Reset the results
 			setBands([]);
+			setEndingProb('');
 
 			// Request calculation of new monte carlo results from web worker
 			worker.postMessage({ selected, profile, cacheKey });
@@ -129,7 +153,9 @@ const Retirement = ({ clientName }) => {
 
 					<div className='retirement-results-top-row-section'>
 						<p className='retirement-results-top-row-title'>Lasts Until 95</p>
-						<p className='retirement-results-top-row-value'>87%</p>
+						<p className='retirement-results-top-row-value'>
+							{endingProb ? endingProb : <span style={{ opacity: '0' }}>0</span>}
+						</p>
 					</div>
 				</div>
 			</div>
