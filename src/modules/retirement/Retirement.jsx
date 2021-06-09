@@ -20,6 +20,7 @@ const Retirement = ({ clientName }) => {
 	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
 	const [bands, setBands] = useState([]);
 	const [endingProb, setEndingProb] = useState('');
+	const [negativeYears, setNegativeYears] = useState('');
 	const [chartLeft, setChartLeft] = useState(0);
 
 	// TODO - display survival probabilities
@@ -28,6 +29,7 @@ const Retirement = ({ clientName }) => {
 	// Have a popup above the chart that shows 87: 95% that follows your finger,
 	// adjusts the number as your finger moves
 	// Round bands to the nearest thousand?
+	// TODO - the future income / savings is slowing down the webworker a ton
 
 	// Compute the updated projection results
 	const results = useMemo(() => {
@@ -42,11 +44,16 @@ const Retirement = ({ clientName }) => {
 			// If we get data back from the worker
 			if (e.data.results) {
 				// Update the bands to render
+				const newNegativeYears = numeral(e.data.avgNegativeYears).format('0.0');
+
 				setBands(e.data.results);
+				setNegativeYears(newNegativeYears);
 
 				// Cache the results using the provided key
 				if (e.data.cacheKey) {
-					monteCarloCacheRef.current[e.data.cacheKey] = e.data.results;
+					monteCarloCacheRef.current[e.data.cacheKey] = {};
+					monteCarloCacheRef.current[e.data.cacheKey].results = e.data.results;
+					monteCarloCacheRef.current[e.data.cacheKey].avgNegativeYears = newNegativeYears;
 				}
 
 				console.log('results received!');
@@ -88,11 +95,13 @@ const Retirement = ({ clientName }) => {
 
 		// Use cached results if available
 		if (monteCarloCacheRef.current[cacheKey]) {
-			setBands(monteCarloCacheRef.current[cacheKey]);
+			setBands(monteCarloCacheRef.current[cacheKey].results);
+			setNegativeYears(monteCarloCacheRef.current[cacheKey].avgNegativeYears);
 		} else {
 			// Reset the results
 			setBands([]);
 			setEndingProb('');
+			setNegativeYears('');
 
 			// Request calculation of new monte carlo results from web worker
 			worker.postMessage({ selected, profile, cacheKey });
@@ -188,7 +197,7 @@ const Retirement = ({ clientName }) => {
 						<p>$20,000</p>
 
 						<p>Average negative years:</p>
-						<p>18</p>
+						<p>{negativeYears}</p>
 
 						<p>Inflation (Income):</p>
 						<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>

@@ -57,7 +57,7 @@ const Setup = ({ clientName, setClientName }) => {
 		let newStream = {
 			id: profile[prop].reduce((acc, item) => (item.id > acc ? item.id : acc), 1) + 1,
 			value: '',
-			yearStart: '',
+			ageStart: '',
 			numYears: '',
 			shouldInflate: false,
 		};
@@ -78,7 +78,7 @@ const Setup = ({ clientName, setClientName }) => {
 		const newStream = {
 			id: 1,
 			value: '',
-			yearStart: '',
+			ageStart: '',
 			numYears: '',
 			shouldInflate: false,
 		};
@@ -424,7 +424,7 @@ const Setup = ({ clientName, setClientName }) => {
 					<div className='setup-retirement-grid four-input'>
 						<p></p>
 						<label style={{ textAlign: 'center' }}>Value</label>
-						<label style={{ textAlign: 'center' }}>Start</label>
+						<label style={{ textAlign: 'center' }}>At Age</label>
 						<label style={{ textAlign: 'center' }}>Duration</label>
 						<label style={{ textAlign: 'center', margin: '0' }}>Inflate</label>
 						<p></p>
@@ -461,11 +461,11 @@ const Setup = ({ clientName, setClientName }) => {
 									decimalPlaces={0}
 									width='5.75rem'
 									aria-labelledby='futureSavings'
-									value={item.yearStart}
+									value={item.ageStart}
 									onChange={(newValue) => {
 										updateFutureStream('futureSavings', {
 											...item,
-											yearStart: newValue,
+											ageStart: newValue,
 										});
 									}}
 								/>
@@ -533,11 +533,11 @@ const Setup = ({ clientName, setClientName }) => {
 									decimalPlaces={0}
 									width='5.75rem'
 									aria-labelledby='futureIncomes'
-									value={item.yearStart}
+									value={item.ageStart}
 									onChange={(newValue) => {
 										updateFutureStream('futureIncomes', {
 											...item,
-											yearStart: newValue,
+											ageStart: newValue,
 										});
 									}}
 								/>

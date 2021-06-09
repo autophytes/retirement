@@ -456,7 +456,7 @@ input:disabled {
 .additional-details-section {
 	display: grid;
 	margin-top: 1rem;
-	grid-template-columns: repeat(4, max-content max-content);
+	grid-template-columns: repeat(4, max-content auto);
 	/* grid-template-columns: max-content max-content max-content max-content; */
 	/* grid-template-columns: repeat(auto-fit, max-content); */
 	/* grid-template-columns: repeat(auto-fit, minmax(max-content, 1fr)); */

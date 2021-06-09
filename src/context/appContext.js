@@ -24,7 +24,7 @@ const AppContextProvider = (props) => {
 			{
 				id: 1,
 				value: 10000,
-				yearStart: 5,
+				ageStart: 5,
 				numYears: 3,
 				shouldInflate: false,
 			},
@@ -33,7 +33,7 @@ const AppContextProvider = (props) => {
 			{
 				id: 1,
 				value: 30000,
-				yearStart: 30,
+				ageStart: 30,
 				numYears: 5,
 				shouldInflate: false,
 			},

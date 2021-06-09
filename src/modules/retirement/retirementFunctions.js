@@ -61,10 +61,10 @@ export const generateResults = (
 			value: startingInvestments,
 			incomeNeeded: retirementIncome,
 			futureSavings: futureSavings.filter(
-				(item) => item.value && item.yearStart && item.numYears
+				(item) => item.value && item.ageStart && item.numYears
 			),
 			futureIncomes: futureIncomes.filter(
-				(item) => item.value && item.yearStart && item.numYears
+				(item) => item.value && item.ageStart && item.numYears
 			),
 		},
 	];
@@ -131,14 +131,14 @@ export const generateResults = (
 				pension: prior.spouse.pension * (1 + inflationIncome),
 			},
 			incomeNeeded: prior.incomeNeeded * (1 + inflationExpenses),
-			futureIncomes: prior.futureIncomes.map((item) => ({
-				...item,
-				value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
-			})),
-			futureSavings: prior.futureSavings.map((item) => ({
-				...item,
-				value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
-			})),
+			// futureIncomes: prior.futureIncomes.map((item) => ({
+			// 	...item,
+			// 	value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
+			// })),
+			// futureSavings: prior.futureSavings.map((item) => ({
+			// 	...item,
+			// 	value: item.shouldInflate ? item.value * (1 + inflationIncome) : item.value,
+			// })),
 		};
 
 		const hasPrimaryRetired = primaryRetirementAge < currentYear.primary.age;
@@ -151,17 +151,18 @@ export const generateResults = (
 		// Determine the year's investment return
 		let investmentReturn = peopleRetired > 1 ? postRetirementReturn : preRetirementReturn;
 		if (isSimulatedResults) {
-			// const distribution = peopleRetired > 1 ? postDistributionObj : preDistributionObj;
-			// const distribution = gaussian(investmentReturn, 0.12 ** 2); // EVENTUALLY PULL STDEV
-			// investmentReturn = distribution.ppf(Math.random());
-
 			investmentReturn = returnsArray[year - 1];
 		}
 
 		// Add any additional savings
 		const additionalIncome = futureIncomes.reduce((acc, item) => {
-			if (year >= item.yearStart && year < item.yearStart + item.numYears) {
-				return acc + item.value;
+			if (
+				currentYear.primary.age >= item.ageStart &&
+				currentYear.primary.age < item.ageStart + item.numYears
+			) {
+				return acc + item.shouldInflate
+					? item.value * (1 + inflationIncome) ** year
+					: item.value;
 			}
 			return acc;
 		}, 0);
@@ -205,8 +206,13 @@ export const generateResults = (
 
 		// Add any additional savings
 		const additionalSavings = futureSavings.reduce((acc, item) => {
-			if (year >= item.yearStart && year < item.yearStart + item.numYears) {
-				return acc + item.value;
+			if (
+				currentYear.primary.age >= item.ageStart &&
+				currentYear.primary.age < item.ageStart + item.numYears
+			) {
+				return acc + item.shouldInflate
+					? item.value * (1 + inflationIncome) ** year
+					: item.value;
 			}
 			return acc;
 		}, 0);
