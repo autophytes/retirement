@@ -9,15 +9,16 @@ import { generateResults } from './retirementFunctions';
 
 import CalcWorker from '../../webWorkers/CalculateResults.worker';
 import { roundTo } from '../../utils/utils';
+import CountUpText from '../../utils/CountUpText';
 const worker = new CalcWorker();
 
 const Retirement = ({ clientName }) => {
 	const { profile, selected, options, updateProfile, monteCarloCacheRef } =
 		useContext(AppContext);
 
-	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState('$0');
-	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState('$0');
-	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState('$0');
+	const [savingsAtRetirementPV, setSavingsAtRetirementPV] = useState(0);
+	const [savingsAtRetirementFV, setSavingsAtRetirementFV] = useState(0);
+	const [incomeAtRetirementFV, setIncomeAtRetirementFV] = useState(0);
 	const [bands, setBands] = useState([]);
 	const [endingProb, setEndingProb] = useState('');
 	const [negativeYears, setNegativeYears] = useState('');
@@ -114,26 +115,36 @@ const Retirement = ({ clientName }) => {
 
 		console.log('results:', results);
 		let retirementYrResult = results.find(
-			(result) => result.primary.age === primary.retirementAge
+			(result) => result.primary.age === selected.primaryRetirementAge
 		);
 		// The person has already retired, use the currentage
 		if (!retirementYrResult) {
 			retirementYrResult = results.find((result) => result.primary.age === primary.currentAge);
 		}
 
-		const newSavingsAtRetirementFV = roundTo(retirementYrResult.value, -3);
+		const newSavingsAtRetirementFV = roundTo(retirementYrResult.value / 1000, 0);
+		// const newSavingsAtRetirementFV = roundTo(retirementYrResult.value, -3);
+
 		const newSavingsAtRetirementPV = roundTo(
-			newSavingsAtRetirementFV /
-				(1 + inflationExpenses) ** (primary.retirementAge - primary.currentAge),
-			-3
+			retirementYrResult.value /
+				(1 + inflationExpenses) ** (primary.retirementAge - primary.currentAge) /
+				1000,
+			0
 		);
+		// const newSavingsAtRetirementPV = roundTo(
+		// 	newSavingsAtRetirementFV /
+		// 		(1 + inflationExpenses) ** (primary.retirementAge - primary.currentAge),
+		// 	-3
+		// );
 
-		const newIncomeAtRetirementFV = roundTo(retirementYrResult.incomeNeeded, -3);
+		const newIncomeAtRetirementFV = roundTo(retirementYrResult.incomeNeeded / 1000, 0);
+		// const newIncomeAtRetirementFV = roundTo(retirementYrResult.incomeNeeded, -3);
 
-		setSavingsAtRetirementPV(numeral(newSavingsAtRetirementPV).format('($0,0)'));
-		setSavingsAtRetirementFV(numeral(newSavingsAtRetirementFV).format('($0,0)'));
-		setIncomeAtRetirementFV(numeral(newIncomeAtRetirementFV).format('($0,0)'));
-	}, [results, profile]);
+		setSavingsAtRetirementPV(newSavingsAtRetirementPV);
+		// setSavingsAtRetirementPV(numeral(newSavingsAtRetirementPV).format('($0,0)'));
+		setSavingsAtRetirementFV(newSavingsAtRetirementFV);
+		setIncomeAtRetirementFV(newIncomeAtRetirementFV);
+	}, [results, profile, selected]);
 
 	return (
 		<section>
@@ -145,19 +156,29 @@ const Retirement = ({ clientName }) => {
 					<div className='retirement-results-top-row-section'>
 						<p className='retirement-results-top-row-title'>At Retirement</p>
 						<p className='retirement-results-top-row-subtitle'>(Today Dollars)</p>
-						<p className='retirement-results-top-row-value'>{savingsAtRetirementPV}</p>
+						<p className='retirement-results-top-row-value'>
+							{/* {savingsAtRetirementPV} */}
+							{/* <CountUpText /> */}
+							<CountUpText value={savingsAtRetirementPV} />
+						</p>
 					</div>
 
 					<div className='retirement-results-top-row-section'>
 						<p className='retirement-results-top-row-title'>At Retirement</p>
 						<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
-						<p className='retirement-results-top-row-value'>{savingsAtRetirementFV}</p>
+						<p className='retirement-results-top-row-value'>
+							{/* {savingsAtRetirementFV} */}
+							<CountUpText value={savingsAtRetirementFV} />
+						</p>
 					</div>
 
 					<div className='retirement-results-top-row-section'>
 						<p className='retirement-results-top-row-title'>Retirement Income</p>
 						<p className='retirement-results-top-row-subtitle'>(Future Dollars)</p>
-						<p className='retirement-results-top-row-value'>{incomeAtRetirementFV}</p>
+						<p className='retirement-results-top-row-value'>
+							{/* {incomeAtRetirementFV} */}
+							<CountUpText value={incomeAtRetirementFV} />
+						</p>
 					</div>
 
 					<div className='retirement-results-top-row-section'>
