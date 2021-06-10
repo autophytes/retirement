@@ -396,7 +396,7 @@ input:disabled {
 	border-radius: 0.35rem;
 	border: none;
 
-	padding: 0.15rem 0.5rem;
+	padding: 0.25rem 0.75rem 0.15rem 0.75rem;
 	margin: 0 0.5rem 0.25rem 0;
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 
@@ -405,7 +405,7 @@ input:disabled {
 	color: var(--color-primary);
 	background-color: white;
 	font-weight: bold;
-	font-size: 1rem;
+	font-size: 1.1rem;
 	cursor: pointer;
 }
 
@@ -453,13 +453,20 @@ input:disabled {
 	color: var(--color-primary);
 }
 
+.additional-details-section-wrapper {
+	display: flex;
+	justify-content: space-between;
+}
+
 .additional-details-section {
 	display: grid;
-	margin-top: 1rem;
-	grid-template-columns: repeat(4, max-content auto);
-	/* grid-template-columns: max-content max-content max-content max-content; */
-	/* grid-template-columns: repeat(auto-fit, max-content); */
-	/* grid-template-columns: repeat(auto-fit, minmax(max-content, 1fr)); */
+	margin-bottom: auto;
+}
+.additional-details-section.three-column {
+	grid-template-columns: max-content max-content auto;
+}
+.additional-details-section.two-column {
+	grid-template-columns: max-content auto;
 }
 
 .additional-details-section * {
@@ -515,4 +522,5 @@ input:disabled {
 .probability-chart-wrapper {
 	position: relative;
 	margin: 0.75rem auto -2rem auto;
+	padding-right: 0.75rem;
 }

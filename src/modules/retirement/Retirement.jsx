@@ -75,12 +75,12 @@ const Retirement = ({ clientName }) => {
 
 		const probIndex = endingAge - profile.primary.currentAge;
 
-		const probabilty = probArray[probIndex]; // 0 - 1
-		console.log('probabilty:', probabilty);
+		const probabilty = probArray[probIndex] * 100; // 0 - 1
+		// console.log('probabilty:', probabilty);
 
-		const formattedProbability = numeral(probabilty).format('0.0%');
+		// const formattedProbability = numeral(probabilty).format('0.0%');
 
-		setEndingProb(formattedProbability);
+		setEndingProb(probabilty);
 
 		// TODO - eventually pull "ending age" from profile ob
 		// TODO - need to stop the ending age blank flash
@@ -183,8 +183,10 @@ const Retirement = ({ clientName }) => {
 
 					<div className='retirement-results-top-row-section'>
 						<p className='retirement-results-top-row-title'>Lasts Until 95</p>
-						<p className='retirement-results-top-row-value'>
-							{endingProb ? endingProb : <span style={{ opacity: '0' }}>0</span>}
+						<p
+							className='retirement-results-top-row-value'
+							style={!endingProb ? { opacity: '0' } : {}}>
+							<CountUpText value={endingProb} decimals={1} suffix='%' prefix='' />
 						</p>
 					</div>
 				</div>
@@ -204,30 +206,58 @@ const Retirement = ({ clientName }) => {
 				<div className='dashboard-section' style={{ flexGrow: '1', overflow: 'hidden' }}>
 					<RetirementChart results={results} bands={bands} setChartLeft={setChartLeft} />
 					<ProbabilityChart results={results} bands={bands} chartLeft={chartLeft} />
+					{/*           
+          Income - NEED
+          Pension - NEED
+          Starting Investments - NEED
+          Future savings / incomes - NEED
+          Inflations (income / expenses) - NEED
+          Average negative years - NEED 
+*/}
 
 					{/* Detailed results */}
-					<div className='additional-details-section'>
-						{/* Optional */}
-						<p>Pension (60):</p>
-						<p>$15,000</p>
+					<div className='additional-details-section-wrapper'>
+						<div className='additional-details-section three-column'>
+							<label />
+							<label>Primary</label>
+							<label>Spouse</label>
 
-						<p>Rental Income:</p>
-						<p>$8,000</p>
+							<label>Pension</label>
+							<p>20,000</p>
+							<p>30,000</p>
 
-						<p>Social Security (65):</p>
-						<p>$20,000</p>
+							<label>Income</label>
+							<p>20,000</p>
+							<p>30,000</p>
+							{/* PENSION */}
+							{/* Income */}
+						</div>
 
-						<p>Average negative years:</p>
-						<p>{negativeYears}</p>
+						<div className='additional-details-section two-column'>
+							{/* Optional */}
+							<p>Pension (60):</p>
+							<p>$15,000</p>
 
-						<p>Inflation (Income):</p>
-						<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
+							<p>Rental Income:</p>
+							<p>$8,000</p>
+						</div>
+						<div className='additional-details-section two-column'>
+							<p>Social Security (65):</p>
+							<p>$20,000</p>
 
-						<p>Inflation (Expenses):</p>
-						<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
+							<p>Average negative years:</p>
+							<p>{negativeYears}</p>
+						</div>
+						<div className='additional-details-section two-column'>
+							<p>Inflation (Income):</p>
+							<p>{(profile.inflationIncome * 100).toFixed(1)}%</p>
 
-						<p>Inflation (Pension):</p>
-						<p>2.5%</p>
+							<p>Inflation (Expenses):</p>
+							<p>{(profile.inflationExpenses * 100).toFixed(1)}%</p>
+
+							<p>Inflation (Pension):</p>
+							<p>2.5%</p>
+						</div>
 					</div>
 				</div>
 				{/* Monte Carlo age probabilities */}

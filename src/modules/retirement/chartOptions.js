@@ -56,6 +56,7 @@ export const RETIREMENT_OPTIONS = {
 		y: {
 			min: 0,
 			ticks: {
+				color: 'black',
 				font: {
 					size: 18,
 				},
@@ -72,6 +73,7 @@ export const RETIREMENT_OPTIONS = {
 		},
 		x: {
 			ticks: {
+				color: 'black',
 				font: {
 					size: 18,
 				},

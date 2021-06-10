@@ -109,6 +109,7 @@ const RetirementChart = ({ results, bands, setChartLeft }) => {
 				position: 'relative',
 				// width: 'calc(100% - 1.75rem)',
 				margin: '0 auto',
+				paddingRight: '0.75rem',
 			}}>
 			<canvas ref={chartCanvasRef}></canvas>
 		</div>

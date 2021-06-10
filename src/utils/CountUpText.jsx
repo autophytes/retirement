@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useCountUp } from 'react-countup';
 
-const countUpOptions = {
+const defaultOptions = {
 	end: 0,
 	duration: 0.5,
 	prefix: '',
@@ -14,7 +14,8 @@ const countUpOptions = {
 };
 
 // Animated values availabe now. Value should be in thousands of dollars (10,000 => 10)
-const CountUpText = ({ value, suffix = ',000', prefix = '$' }) => {
+const CountUpText = ({ value, suffix = ',000', prefix = '$', decimals = 0 }) => {
+	const countUpOptions = useMemo(() => ({ ...defaultOptions, decimals }), [decimals]);
 	const { countUp, update } = useCountUp(countUpOptions);
 
 	useEffect(() => {
